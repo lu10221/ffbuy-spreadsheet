@@ -153,9 +153,26 @@
     // Function to fetch products from JSON API
     function fetchProducts() {
         const productsContainer = document.getElementById('products-container');
+        const loadingIndicator = document.querySelector('.loading-indicator');
         const apiUrl = 'https://opensheet.elk.sh/1hs4cXFLQRhdR8MfQ0vt0oMXhXplksGbU9vzkhO46J6A/Set';
         
-        fetch(apiUrl)
+        // 创建一个单独的加载指示器，不会阻止页面交互
+        if (!loadingIndicator) {
+            const indicator = document.createElement('div');
+            indicator.className = 'loading-indicator';
+            indicator.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 正在加载产品数据...';
+            productsContainer.appendChild(indicator);
+        }
+        
+        // 设置超时，如果API请求时间过长，显示部分UI
+        const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => {
+                reject(new Error('请求超时，请检查网络连接'));
+            }, 10000); // 10秒超时
+        });
+        
+        // 使用Promise.race在超时和正常请求之间竞争
+        Promise.race([fetch(apiUrl), timeoutPromise])
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -163,8 +180,11 @@
                 return response.json();
             })
             .then(data => {
-                // Clear loading indicator
-                productsContainer.innerHTML = '';
+                // 移除加载指示器，保留其他内容
+                const loadingIndicator = document.querySelector('.loading-indicator');
+                if (loadingIndicator) {
+                    loadingIndicator.remove();
+                }
                 
                 // Process and display the products
                 data.forEach((product, index) => {
@@ -182,8 +202,8 @@
                                     <div class="product-title">${product.spbt}</div>
                                     <div class="product-price">
                                         <div>
-                                            <span class="us-price">$${product.US || '--'}</span>
-                                            <span class="cny-price">￥${product.CNY || '--'}</span>
+                                            <span class="us-price">${product.US || '--'}</span>
+                                            <span class="eur-price">${product.EUR || '--'}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -195,7 +215,7 @@
                 });
                 
                 // If no products were added, show a message
-                if (productsContainer.children.length === 0) {
+                if (productsContainer.children.length === 0 || (productsContainer.children.length === 1 && productsContainer.children[0].classList.contains('loading-indicator'))) {
                     productsContainer.innerHTML = '<div class="no-products">暂无产品数据</div>';
                 }
             })
