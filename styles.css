@@ -300,6 +300,48 @@ nav a.active {
     .nav-links a:first-child {
         display: inline;
     }
+
+    /* Mobile Navigation */
+    .mobile-menu-btn {
+        display: block;
+        cursor: pointer;
+        font-size: 20px;
+        color: #333;
+    }
+
+    nav {
+        flex-direction: column;
+        align-items: flex-start;
+        background-color: white;
+        position: fixed;
+        top: 50px;
+        left: 0;
+        width: 100%;
+        height: 0;
+        overflow: hidden;
+        transition: height 0.3s ease;
+        z-index: 99;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    nav.active {
+        height: auto;
+        padding: 10px 0;
+        overflow-y: auto;
+        max-height: 80vh;
+    }
+
+    nav a {
+        display: block;
+        padding: 12px 20px;
+        margin: 0;
+        width: 100%;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    nav a:last-child {
+        border-bottom: none;
+    }
 }
 
 @media (max-width: 480px) {
