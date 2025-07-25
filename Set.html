@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set - $FFBuy SpreadSheet</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+</head>
+<body>
+    <header>
+        <a href="index.html" class="logo">$FFBuy SpreadSheet</a>
+        <div class="search-container">
+            <input type="text" class="search-box" placeholder="Search products...">
+            <span class="search-icon"><i class="fas fa-search"></i></span>
+        </div>
+        <div class="nav-links">
+            <a href="index.html"><i class="fas fa-home"></i> Home</a>
+            <a href="#"><i class="fas fa-th-large"></i> All Categories <i class="fas fa-chevron-down"></i></a>
+        </div>
+    </header>
+
+    <nav>
+        <a href="HOT PRODUCTS.html"><i class="fas fa-fire"></i> HOT PRODUCTS</a>
+        <a href="T-Shirt.html"><i class="fas fa-tshirt"></i> T-Shirt</a>
+        <a href="Pants.html"><i class="fas fa-socks"></i> Pants</a>
+        <a href="Shoes.html"><i class="fas fa-shoe-prints"></i> Shoes</a>
+        <a href="Set.html" class="active"><i class="fas fa-layer-group"></i> Set</a>
+        <a href="Accessories.html"><i class="fas fa-gem"></i> Accessories</a>
+        <a href="Hoodie Sweatshirt.html"><i class="fas fa-tshirt"></i> Hoodie/Sweatshirt</a>
+        <a href="ELECTRONICOS.html"><i class="fas fa-laptop"></i> ELECTRONICOS</a>
+    </nav>
+
+    <div class="container">
+        <div class="products-grid" id="products-container">
+            <!-- Products will be loaded dynamically from JSON data -->
+            <div class="loading-indicator">
+                <i class="fas fa-spinner fa-spin"></i> 正在加载产品数据...
+            </div>
+        </div>
+    </div>
+
+    <div class="chat-button"><i class="fas fa-comments"></i></div>
+
+<div class="floating-buttons">
+    <div class="float-btn help-btn"><i class="fas fa-question"></i></div>
+    <div class="float-btn back-to-top"><i class="fas fa-arrow-up"></i></div>
+</div>
+
+<script>
+    // Document ready function
+    document.addEventListener('DOMContentLoaded', function() {
+        // Fetch products from JSON API
+        fetchProducts();
+        
+        // Product filter functionality
+        const searchBox = document.querySelector('.search-box');
+        
+        searchBox.addEventListener('keyup', function() {
+            const searchTerm = this.value.toLowerCase();
+            const productCards = document.querySelectorAll('.product-card');
+            
+            productCards.forEach(card => {
+                const title = card.querySelector('.product-title').textContent.toLowerCase();
+                
+                if (title.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+        
+        // Back to top button functionality
+        const backToTopBtn = document.querySelector('.back-to-top');
+        
+        backToTopBtn.addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        
+        // Show/hide back to top button based on scroll position
+        window.addEventListener('scroll', function() {
+            if (window.pageYOffset > 300) {
+                backToTopBtn.style.opacity = '1';
+            } else {
+                backToTopBtn.style.opacity = '0.7';
+            }
+        });
+        
+        // Help button functionality
+        const helpBtn = document.querySelector('.help-btn');
+        
+        helpBtn.addEventListener('click', function() {
+            alert('Need help? Contact us at support@cnfans.com');
+        });
+    });
+    
+    // Function to fetch products from JSON API
+    function fetchProducts() {
+        const productsContainer = document.getElementById('products-container');
+        const apiUrl = 'https://opensheet.elk.sh/1hs4cXFLQRhdR8MfQ0vt0oMXhXplksGbU9vzkhO46J6A/Set';
+        
+        fetch(apiUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Clear loading indicator
+                productsContainer.innerHTML = '';
+                
+                // Process and display the products
+                data.forEach((product, index) => {
+                    if (product.spbt && product.ztURL && product.spURL) {
+                        const productCard = document.createElement('div');
+                        productCard.className = 'product-card';
+                        productCard.style.animationDelay = `${index * 0.03}s`;
+                        productCard.classList.add('fade-in');
+                        
+                        // Create product HTML
+                        productCard.innerHTML = `
+                            <a href="${product.spURL}" target="_blank">
+                                <img src="${product.ztURL}" class="product-image" alt="${product.spbt}">
+                                <div class="product-info">
+                                    <div class="product-title">${product.spbt}</div>
+                                    <div class="product-price">
+                                        <div>
+                                            <span class="us-price">$${product.US || '--'}</span>
+                                            <span class="cny-price">￥${product.CNY || '--'}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        `;
+                        
+                        productsContainer.appendChild(productCard);
+                    }
+                });
+                
+                // If no products were added, show a message
+                if (productsContainer.children.length === 0) {
+                    productsContainer.innerHTML = '<div class="no-products">暂无产品数据</div>';
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching products:', error);
+                productsContainer.innerHTML = `<div class="error-message">加载产品数据失败: ${error.message}</div>`;
+            });
+    }
+</script>
+</body>
+</html>
