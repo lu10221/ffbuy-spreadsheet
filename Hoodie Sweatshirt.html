@@ -44,10 +44,10 @@
         </div>
     </div>
 
-    <div class="chat-button"><i class="fas fa-comments"></i></div>
+    <img src="img/ws.png" alt="WhatsApp" class="chat-button">
 
 <div class="floating-buttons">
-    <div class="float-btn help-btn"><i class="fab fa-telegram"></i></div>
+    <img src="img/telegram.png" alt="Telegram" class="telegram-icon">
     <div class="float-btn back-to-top"><i class="fas fa-arrow-up"></i></div>
 </div>
 
@@ -142,10 +142,10 @@
             }
         });
         
-        // Telegram button functionality
-        const helpBtn = document.querySelector('.help-btn');
+        // Telegram icon functionality
+        const telegramIcon = document.querySelector('.telegram-icon');
         
-        helpBtn.addEventListener('click', function() {
+        telegramIcon.addEventListener('click', function() {
             window.open('https://t.me/cnw2cfind', '_blank');
         });
     });
