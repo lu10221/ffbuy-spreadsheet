@@ -47,7 +47,7 @@
     <div class="chat-button"><i class="fas fa-comments"></i></div>
 
 <div class="floating-buttons">
-    <div class="float-btn help-btn"><i class="fas fa-question"></i></div>
+    <div class="float-btn help-btn"><i class="fab fa-telegram"></i></div>
     <div class="float-btn back-to-top"><i class="fas fa-arrow-up"></i></div>
 </div>
 
@@ -142,11 +142,11 @@
             }
         });
         
-        // Help button functionality
+        // Telegram button functionality
         const helpBtn = document.querySelector('.help-btn');
         
         helpBtn.addEventListener('click', function() {
-            alert('Need help? Contact us at support@cnfans.com');
+            window.open('https://t.me/cnw2cfind', '_blank');
         });
     });
     
