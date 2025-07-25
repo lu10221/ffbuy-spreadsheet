@@ -10,17 +10,21 @@
 </head>
 <body>
     <header>
-        <a href="index.html" class="logo">$FFBuy SpreadSheet</a>
-        <div class="search-container">
-            <input type="text" class="search-box" placeholder="Search products...">
-            <span class="search-icon"><i class="fas fa-search"></i></span>
+        <div class="header-top">
+            <a href="index.html" class="logo">$FFBuy SpreadSheet</a>
+            <div class="nav-links">
+                <a href="index.html"><i class="fas fa-home"></i> Home</a>
+                <a href="#"><i class="fas fa-th-large"></i> All Categories <i class="fas fa-chevron-down"></i></a>
+            </div>
+            <div class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </div>
         </div>
-        <div class="nav-links">
-            <a href="index.html"><i class="fas fa-home"></i> Home</a>
-            <a href="#"><i class="fas fa-th-large"></i> All Categories <i class="fas fa-chevron-down"></i></a>
-        </div>
-        <div class="mobile-menu-btn">
-            <i class="fas fa-bars"></i>
+        <div class="header-bottom">
+            <div class="search-container">
+                <input type="text" class="search-box" placeholder="Search products...">
+                <span class="search-icon"><i class="fas fa-search"></i></span>
+            </div>
         </div>
     </header>
 
@@ -32,22 +36,21 @@
         <a href="Set.html"><i class="fas fa-layer-group"></i> Set</a>
         <a href="Accessories.html" class="active"><i class="fas fa-gem"></i> Accessories</a>
         <a href="Hoodie Sweatshirt.html"><i class="fas fa-tshirt"></i> Hoodie/Sweatshirt</a>
-        <a href="ELECTRONICOS.html"><i class="fas fa-laptop"></i> ELECTRONICOS</a>
+        <!-- ELECTRONICOS page hidden as requested -->
     </nav>
 
     <div class="container">
         <div class="products-grid" id="products-container">
             <!-- Products will be loaded dynamically from JSON data -->
             <div class="loading-indicator">
-                <i class="fas fa-spinner fa-spin"></i> 正在加载产品数据...
+                <i class="fas fa-spinner fa-spin"></i> Loading products...
             </div>
         </div>
     </div>
 
-    <img src="img/ws.png" alt="WhatsApp" class="chat-button">
-
 <div class="floating-buttons">
     <img src="img/telegram.png" alt="Telegram" class="telegram-icon">
+    <img src="img/ws.png" alt="WhatsApp" class="whatsapp-icon">
     <div class="float-btn back-to-top"><i class="fas fa-arrow-up"></i></div>
 </div>
 
@@ -57,10 +60,10 @@
         // Fetch products from JSON API
         fetchProducts();
         
-        // Chat button functionality
-        const chatButton = document.querySelector('.chat-button');
-        if (chatButton) {
-            chatButton.addEventListener('click', function() {
+        // WhatsApp icon functionality
+        const whatsappIcon = document.querySelector('.whatsapp-icon');
+        if (whatsappIcon) {
+            whatsappIcon.addEventListener('click', function() {
                 window.open('https://wa.me/message/INCWNKPORGSSN1', '_blank');
             });
         }
@@ -150,7 +153,7 @@
         });
     });
     
-    // 全局变量，用于懒加载功能
+    // Global variables for lazy loading
     let allProducts = [];
     let currentPage = 1;
     const productsPerPage = 50;
@@ -163,25 +166,25 @@
         const loadingIndicator = document.querySelector('.loading-indicator');
         const apiUrl = 'https://opensheet.elk.sh/1hs4cXFLQRhdR8MfQ0vt0oMXhXplksGbU9vzkhO46J6A/Accessories';
         
-        // 设置加载状态
+        // Set loading state
         isLoading = true;
         
-        // 创建一个单独的加载指示器，不会阻止页面交互
+        // Create a separate loading indicator that doesn't block page interaction
         if (!loadingIndicator) {
             const indicator = document.createElement('div');
             indicator.className = 'loading-indicator';
-            indicator.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 正在加载产品数据...';
+            indicator.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading products...';
             productsContainer.appendChild(indicator);
         }
         
-        // 设置超时，如果API请求时间过长，显示部分UI
+        // Set timeout if API request takes too long, show partial UI
         const timeoutPromise = new Promise((_, reject) => {
             setTimeout(() => {
-                reject(new Error('请求超时，请检查网络连接'));
-            }, 10000); // 10秒超时
+                reject(new Error('Request timeout, please check your network connection'));
+            }, 10000); // 10 seconds timeout
         });
         
-        // 使用Promise.race在超时和正常请求之间竞争
+        // Use Promise.race to compete between timeout and normal request
         Promise.race([fetch(apiUrl), timeoutPromise])
             .then(response => {
                 if (!response.ok) {
@@ -190,67 +193,67 @@
                 return response.json();
             })
             .then(data => {
-                // 移除加载指示器，保留其他内容
+                // Remove loading indicator, keep other content
                 const loadingIndicator = document.querySelector('.loading-indicator');
                 if (loadingIndicator) {
                     loadingIndicator.remove();
                 }
                 
-                // 存储所有产品数据
+                // Store all product data
                 allProducts = data.filter(product => product.spbt && product.ztURL && product.spURL);
                 
-                // 如果没有产品数据，显示提示信息
+                // If no product data, show message
                 if (allProducts.length === 0) {
-                    productsContainer.innerHTML = '<div class="no-products">暂无产品数据</div>';
+                    productsContainer.innerHTML = '<div class="no-products">No products available</div>';
                     allProductsLoaded = true;
                 } else {
-                    // 加载第一页产品
+                    // Load first page of products
                     loadMoreProducts();
                     
-                    // 添加滚动事件监听器，实现懒加载
+                    // Add scroll event listener for lazy loading
                     window.addEventListener('scroll', handleScroll);
                 }
                 
-                // 标记为加载完成
+                // Mark as loading complete
                 isLoading = false;
             })
             .catch(error => {
                 console.error('Error fetching products:', error);
-                productsContainer.innerHTML = `<div class="error-message">加载产品数据失败: ${error.message}</div>`;
+                productsContainer.innerHTML = `<div class="error-message">Failed to load products: ${error.message}</div>`;
                 isLoading = false;
             });
     }
     
-    // 加载更多产品的函数
+    // Function to load more products
     function loadMoreProducts() {
-        // 如果正在加载或已加载所有产品，则不处理
+        // If loading or all products loaded, don't process
         if (isLoading || allProductsLoaded) return;
         
-        // 设置加载状态
+        // Set loading state
         isLoading = true;
         
         const productsContainer = document.getElementById('products-container');
         
-        // 计算当前页的起始和结束索引
+        // Calculate start and end index for current page
         const startIndex = (currentPage - 1) * productsPerPage;
         const endIndex = Math.min(startIndex + productsPerPage, allProducts.length);
         
-        // 如果已经加载完所有产品，则设置标志并返回
+        // If all products are loaded, set flag and return
         if (startIndex >= allProducts.length) {
             allProductsLoaded = true;
             isLoading = false;
             return;
         }
         
-        // 创建加载指示器
+        // Create loading indicator
         const loadingIndicator = document.createElement('div');
         loadingIndicator.className = 'loading-more-indicator';
-        loadingIndicator.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 加载更多产品...';
+        loadingIndicator.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading more products...';
         productsContainer.appendChild(loadingIndicator);
         
-        // 模拟网络延迟，实际项目中可以移除
+        // Simulate network delay, can be removed in production
         setTimeout(() => {
-            // 加载当前页的产品
+            // Load current page products
             for (let i = startIndex; i < endIndex; i++) {
                 const product = allProducts[i];
                 const productCard = document.createElement('div');
@@ -277,45 +280,45 @@
                 productsContainer.appendChild(productCard);
             }
             
-            // 移除加载指示器
+            // Remove loading indicator
             if (loadingIndicator) {
                 loadingIndicator.remove();
             }
             
-            // 增加页码
+            // Increase page number
             currentPage++;
             
-            // 检查是否已加载所有产品
+            // Check if all products are loaded
             if (endIndex >= allProducts.length) {
                 allProductsLoaded = true;
-                // 可以添加一个提示，表示已加载所有产品
+                // Add a message indicating all products are loaded
                 const endMessage = document.createElement('div');
                 endMessage.className = 'end-message';
-                endMessage.textContent = '已加载全部产品';
+                endMessage.textContent = 'All products loaded';
                 productsContainer.appendChild(endMessage);
             }
             
             isLoading = false;
-        }, 300); // 300毫秒延迟，模拟网络请求
+        }, 300); // 300ms delay to simulate network request
     }
     
-    // 处理滚动事件的函数
+    // Function to handle scroll events
      function handleScroll() {
-         // 如果正在加载或已加载所有产品，则不处理
+         // If loading or all products loaded, don't process
          if (isLoading || allProductsLoaded) return;
          
-         // 计算滚动位置
+         // Calculate scroll position
          const scrollTop = window.scrollY || document.documentElement.scrollTop;
          const windowHeight = window.innerHeight;
          const documentHeight = document.documentElement.scrollHeight;
          
-         // 当滚动到页面底部附近时，加载更多产品
+         // When scrolled near the bottom of the page, load more products
          if (scrollTop + windowHeight >= documentHeight - 200) {
              loadMoreProducts();
          }
      }
      
-    // 页面加载完成后，调用fetchProducts函数获取产品数据
+    // When page is loaded, call fetchProducts function to get product data
     document.addEventListener('DOMContentLoaded', fetchProducts);
 </script>
 </body>
