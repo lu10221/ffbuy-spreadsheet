@@ -10,17 +10,21 @@
 </head>
 <body>
     <header>
-        <a href="index.html" class="logo">$FFBuy SpreadSheet</a>
-        <div class="search-container">
-            <input type="text" class="search-box" placeholder="Search products...">
-            <span class="search-icon"><i class="fas fa-search"></i></span>
+        <div class="header-top">
+            <a href="index.html" class="logo">$FFBuy SpreadSheet</a>
+            <div class="nav-links">
+                <a href="index.html"><i class="fas fa-home"></i> Home</a>
+                <a href="#"><i class="fas fa-th-large"></i> All Categories <i class="fas fa-chevron-down"></i></a>
+            </div>
+            <div class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </div>
         </div>
-        <div class="nav-links">
-            <a href="index.html"><i class="fas fa-home"></i> Home</a>
-            <a href="#"><i class="fas fa-th-large"></i> All Categories <i class="fas fa-chevron-down"></i></a>
-        </div>
-        <div class="mobile-menu-btn">
-            <i class="fas fa-bars"></i>
+        <div class="header-bottom">
+            <div class="search-container">
+                <input type="text" class="search-box" placeholder="Search products...">
+                <span class="search-icon"><i class="fas fa-search"></i></span>
+            </div>
         </div>
     </header>
 
@@ -32,7 +36,7 @@
         <a href="Set.html"><i class="fas fa-layer-group"></i> Set</a>
         <a href="Accessories.html"><i class="fas fa-gem"></i> Accessories</a>
         <a href="Hoodie Sweatshirt.html"><i class="fas fa-tshirt"></i> Hoodie/Sweatshirt</a>
-        <a href="ELECTRONICOS.html"><i class="fas fa-laptop"></i> ELECTRONICOS</a>
+        <!-- ELECTRONICOS page hidden as requested -->
     </nav>
 
     <div class="container">
@@ -44,10 +48,9 @@
         </div>
     </div>
 
-    <img src="img/ws.png" alt="WhatsApp" class="chat-button">
-
 <div class="floating-buttons">
     <img src="img/telegram.png" alt="Telegram" class="telegram-icon">
+    <img src="img/ws.png" alt="WhatsApp" class="whatsapp-icon">
     <div class="float-btn back-to-top"><i class="fas fa-arrow-up"></i></div>
 </div>
 
@@ -57,10 +60,10 @@
         // Fetch products from JSON API
         fetchProducts();
         
-        // Chat button functionality
-        const chatButton = document.querySelector('.chat-button');
-        if (chatButton) {
-            chatButton.addEventListener('click', function() {
+        // WhatsApp icon functionality
+        const whatsappIcon = document.querySelector('.whatsapp-icon');
+        if (whatsappIcon) {
+            whatsappIcon.addEventListener('click', function() {
                 window.open('https://wa.me/message/INCWNKPORGSSN1', '_blank');
             });
         }

@@ -17,72 +17,133 @@ body {
 /* Header Styles */
 header {
     background-color: white;
-    padding: 10px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
     position: sticky;
     top: 0;
     z-index: 100;
+    transition: all 0.3s ease;
+}
+
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 25px;
+}
+
+.header-bottom {
+    padding: 0 25px 15px 25px;
 }
 
 .logo {
-    color: #ff6347;
+    font-size: 20px;
     font-weight: bold;
-    font-size: 16px;
+    color: #ff6347;
     text-decoration: none;
+    transition: transform 0.2s ease, color 0.2s ease;
+    display: flex;
+    align-items: center;
+}
+
+.logo:hover {
+    transform: scale(1.05);
+    color: #ff4500;
 }
 
 .search-container {
+    position: relative;
+    flex: 0 1 450px;
+    margin: 0 20px;
     display: flex;
     align-items: center;
-    position: relative;
 }
 
 .search-box {
-    padding: 6px 12px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    width: 200px;
+    width: 100%;
+    padding: 10px 18px;
+    border: 1px solid #eee;
+    border-radius: 20px;
+    font-size: 14px;
+    background-color: #f9f9f9;
+    transition: all 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     outline: none;
-    font-size: 13px;
-    background-color: #f5f5f5;
 }
 
 .search-box:focus {
     border-color: #ff6347;
-    background-color: #fff;
+    background-color: white;
+    box-shadow: 0 1px 5px rgba(255,99,71,0.2);
 }
 
 .search-icon {
     position: absolute;
-    right: 10px;
-    color: #888;
+    right: 18px;
+    color: #999;
     cursor: pointer;
-    font-size: 13px;
+    font-size: 15px;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.search-icon:hover {
+    color: #ff6347;
+    transform: scale(1.1);
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
 }
 
 .nav-links a {
-    margin-left: 15px;
+    margin-left: 20px;
     text-decoration: none;
     color: #333;
     font-size: 14px;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 20px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+}
+
+.nav-links a i {
+    margin-right: 6px;
 }
 
 .nav-links a:hover {
-    color: #ff4500;
+    color: #ff6347;
+    background-color: rgba(255,99,71,0.08);
 }
 
 /* Navigation Bar Styles */
 nav {
     display: flex;
     justify-content: flex-start;
-    padding: 10px 20px;
+    padding: 12px 20px;
     background-color: white;
     margin-bottom: 15px;
     overflow-x: auto;
     white-space: nowrap;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.05);
+    scrollbar-width: thin;
+    scrollbar-color: #ff6347 #f0f0f0;
+}
+
+/* Custom scrollbar for webkit browsers */
+nav::-webkit-scrollbar {
+    height: 4px;
+}
+
+nav::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    border-radius: 10px;
+}
+
+nav::-webkit-scrollbar-thumb {
+    background-color: #ff6347;
+    border-radius: 10px;
 }
 
 nav a {
@@ -90,13 +151,22 @@ nav a {
     text-decoration: none;
     color: #333;
     font-weight: normal;
-    padding: 5px 8px;
+    padding: 8px 12px;
     transition: all 0.2s ease;
     font-size: 14px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+}
+
+nav a i {
+    margin-right: 6px;
+    font-size: 15px;
 }
 
 nav a:hover {
     color: #ff6347;
+    background-color: rgba(255,99,71,0.08);
 }
 
 nav a.active {
@@ -109,6 +179,7 @@ nav a.active {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 10px;
+    margin-top: 20px; /* 添加顶部边距，避免产品被搜索框遮挡 */
 }
 
 .products-grid {
@@ -121,16 +192,19 @@ nav a.active {
 /* Product Card Styles */
 .product-card {
     background-color: white;
-    border-radius: 0;
+    border-radius: 12px;
     overflow: hidden;
-    transition: transform 0.2s;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    animation: fadeIn 0.5s ease-in-out;
     position: relative;
     border: 1px solid #f0f0f0;
 }
 
 .product-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    border-color: #e0e0e0;
 }
 
 .product-card a {
@@ -142,15 +216,29 @@ nav a.active {
 
 /* Loading Indicator */
 .loading-indicator {
-    text-align: center;
-    padding: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 25px;
     grid-column: 1 / -1;
-    color: #ff6347;
-    font-size: 16px;
+    color: #666;
+    font-size: 15px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+    margin: 10px 0;
 }
 
 .loading-indicator i {
-    margin-right: 10px;
+    margin-right: 12px;
+    color: #ff6347;
+    font-size: 18px;
+    animation: spin 1s infinite linear;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 /* Animation for product cards */
@@ -169,42 +257,57 @@ nav a.active {
     height: 180px;
     object-fit: cover;
     display: block;
+    transition: transform 0.5s ease;
+}
+
+.product-card:hover .product-image {
+    transform: scale(1.05);
 }
 
 .product-info {
-    padding: 8px;
+    padding: 12px;
+    border-top: 1px solid #f5f5f5;
 }
 
 .product-title {
-    font-size: 12px;
-    margin-bottom: 5px;
+    margin: 0 0 8px 0;
+    font-size: 14px;
     color: #333;
-    height: 32px;
+    height: 40px;
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
-    line-height: 1.3;
+    line-height: 1.4;
+    font-weight: 500;
 }
 
 .product-price {
     font-weight: bold;
     color: #ff6347;
-    font-size: 14px;
+    font-size: 16px;
+    margin: 0;
     display: flex;
-    justify-content: flex-start;
     align-items: center;
 }
+
+.us-price, .eur-price {
+    display: inline-block;
+    position: relative;
+}
+
+/* 移除了货币符号伪元素，因为数据中已包含符号 */
 
 .us-price {
     font-weight: bold;
     font-size: 15px;
+    color: #ff6347;
 }
 
 .eur-price {
     color: #666;
     font-size: 13px;
-    margin-left: 5px;
+    margin-left: 8px;
 }
 
 .no-products, .error-message {
@@ -238,32 +341,24 @@ nav a.active {
 
 .end-message {
     text-align: center;
-    padding: 15px;
-    font-size: 14px;
-    color: #888;
+    padding: 25px;
+    font-size: 15px;
+    color: #666;
     width: 100%;
     margin: 10px auto;
     grid-column: 1 / -1;
-    border-top: 1px solid #eee;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+    font-weight: 500;
+    border: 1px dashed #ddd;
 }
 
 /* Floating Buttons */
-.chat-button {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 45px;
-    height: 45px;
-    object-fit: contain;
-    cursor: pointer;
-    z-index: 1000;
-    transition: transform 0.2s;
-}
-
 .floating-buttons {
     position: fixed;
-    bottom: 20px;
-    left: 20px;
+    bottom: 25px;
+    left: 25px;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -288,12 +383,14 @@ nav a.active {
     background-color: #0088cc;
 }
 
-.telegram-icon {
-    width: 45px;
-    height: 45px;
+.telegram-icon, .whatsapp-icon {
+    width: 60px;
+    height: 60px;
     object-fit: contain;
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: all 0.3s ease;
+    border-radius: 50%;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.15);
     margin-bottom: 0px;
 }
 
@@ -301,16 +398,40 @@ nav a.active {
     transform: scale(1.1);
 }
 
+/* Back to Top Button */
 .back-to-top {
-    background-color: #4CAF50;
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background-color: #ff6347;
+    color: white;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 99;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+    font-size: 18px;
 }
 
-.chat-button:hover {
-    transform: scale(1.1);
+.back-to-top:hover {
+    background-color: #ff4500;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
 
-.float-btn:hover {
-    transform: scale(1.1);
+.back-to-top.visible {
+    opacity: 1;
+}
+
+.telegram-icon:hover, .whatsapp-icon:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
 
 /* Responsive Styles */
@@ -321,13 +442,39 @@ nav a.active {
 }
 
 @media (max-width: 768px) {
+    .container {
+        margin-top: 30px; /* 在平板设备上增加顶部边距 */
+    }
+    
     .products-grid {
         grid-template-columns: repeat(3, 1fr);
         gap: 8px;
     }
     
+    /* Header adjustments for mobile */
+    .header-top {
+        padding: 12px 15px;
+    }
+    
+    .header-bottom {
+        padding: 0 15px 12px 15px;
+    }
+    
+    .logo {
+        font-size: 16px;
+    }
+    
+    .search-container {
+        flex: 1;
+        margin: 0;
+        width: 100%;
+    }
+    
     .search-box {
-        width: 150px;
+        width: 100%;
+        padding: 8px 12px;
+        font-size: 13px;
+        border-radius: 16px;
     }
     
     .nav-links a {
@@ -336,6 +483,8 @@ nav a.active {
     
     .nav-links a:first-child {
         display: inline;
+        margin-left: 0;
+        padding: 5px 8px;
     }
 
     /* Mobile Navigation */
@@ -344,21 +493,31 @@ nav a.active {
         cursor: pointer;
         font-size: 20px;
         color: #333;
+        transition: transform 0.2s ease;
+        padding: 5px;
+        border-radius: 4px;
     }
-
+    
+    .mobile-menu-btn:hover {
+        transform: scale(1.1);
+        background-color: rgba(255,99,71,0.08);
+    }
+    
+    /* Mobile Navigation styles */
     nav {
         flex-direction: column;
         align-items: flex-start;
         background-color: white;
         position: fixed;
-        top: 50px;
+        top: 100px; /* Adjusted to account for both header-top and header-bottom */
         left: 0;
         width: 100%;
         height: 0;
         overflow: hidden;
-        transition: height 0.3s ease;
+        transition: all 0.3s ease;
         z-index: 99;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        border-top: 1px solid #f0f0f0;
     }
 
     nav.active {
@@ -369,24 +528,88 @@ nav a.active {
     }
 
     nav a {
-        display: block;
-        padding: 12px 20px;
+        display: flex;
+        align-items: center;
+        padding: 14px 20px;
         margin: 0;
         width: 100%;
-        border-bottom: 1px solid #f0f0f0;
+        border-bottom: 1px solid #f5f5f5;
+        border-radius: 0;
+        font-size: 15px;
+        font-weight: 500;
+    }
+
+    nav a i {
+        margin-right: 12px;
+        width: 20px;
+        text-align: center;
+        font-size: 16px;
+        color: #ff6347;
     }
 
     nav a:last-child {
         border-bottom: none;
     }
+    
+    nav a.active {
+        background-color: rgba(255,99,71,0.08);
+        border-left: 3px solid #ff6347;
+    }
 }
 
 @media (max-width: 480px) {
+    .container {
+        margin-top: 40px; /* 在手机设备上增加更大的顶部边距 */
+    }
+    
     .products-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 6px;
     }
     
+    /* Header adjustments for very small screens */
+    .header-top {
+        padding: 10px 12px;
+    }
+    
+    .header-bottom {
+        padding: 0 12px 10px 12px;
+    }
+    
+    .logo {
+        font-size: 15px;
+    }
+    
+    .search-container {
+        margin: 0;
+    }
+    
+    .search-box {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+    
+    .search-icon {
+        right: 10px;
+        font-size: 12px;
+    }
+    
+    .nav-links a:first-child {
+        padding: 4px 6px;
+        font-size: 13px;
+    }
+    
+    .mobile-menu-btn {
+        font-size: 18px;
+        padding: 4px;
+    }
+    
+    /* Adjust nav position for smaller screens */
+    nav {
+        top: 90px; /* Smaller top value for smaller screens */
+    }
+    
+    /* Product adjustments for very small screens */
     .product-image {
         height: 140px;
     }
@@ -400,7 +623,14 @@ nav a.active {
         font-size: 13px;
     }
     
-    .search-box {
-        width: 100px;
+    /* Navigation adjustments for very small screens */
+    nav a {
+        padding: 12px 15px;
+        font-size: 14px;
+    }
+    
+    nav a i {
+        margin-right: 10px;
+        font-size: 15px;
     }
 }
