@@ -57,6 +57,14 @@
         // Fetch products from JSON API
         fetchProducts();
         
+        // Chat button functionality
+        const chatButton = document.querySelector('.chat-button');
+        if (chatButton) {
+            chatButton.addEventListener('click', function() {
+                window.open('https://wa.me/message/INCWNKPORGSSN1', '_blank');
+            });
+        }
+        
         // Product filter functionality
         const searchBox = document.querySelector('.search-box');
         
