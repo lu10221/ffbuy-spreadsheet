@@ -219,7 +219,7 @@ nav a.active {
     color: #ff4500;
 }
 
-.loading-indicator {
+.loading-indicator, .loading-more-indicator {
     text-align: center;
     padding: 20px;
     font-size: 16px;
@@ -233,6 +233,18 @@ nav a.active {
     background: rgba(255, 255, 255, 0.8);
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    grid-column: 1 / -1;
+}
+
+.end-message {
+    text-align: center;
+    padding: 15px;
+    font-size: 14px;
+    color: #888;
+    width: 100%;
+    margin: 10px auto;
+    grid-column: 1 / -1;
+    border-top: 1px solid #eee;
 }
 
 /* Floating Buttons */
