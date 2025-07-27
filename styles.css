@@ -12,6 +12,7 @@ body {
     background-color: #ffffff;
     color: #333;
     line-height: 1.6;
+    padding-top: 0px; /* 为固定的logo栏添加上边距 */
 }
 
 /* Top Info Bar Styles */
@@ -34,13 +35,27 @@ body {
     color: #0056b3;
 }
 
+/* Fixed Logo Bar Styles */
+.fixed-logo-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    padding: 15px 25px;
+    z-index: 101;
+    text-align: center;
+    /* 移除红色底部边框 */
+    /* border-bottom: 1px solid #ff6347; */
+}
+
 /* Header Styles */
 header {
     background-color: white;
     box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    position: relative;
+    z-index: 99;
     transition: all 0.3s ease;
 }
 
@@ -86,6 +101,10 @@ header {
     color: #ff6347;
     text-decoration: none;
     transition: transform 0.2s ease, color 0.2s ease;
+    display: inline-block;
+}
+
+.header-top .logo {
     display: flex;
     align-items: center;
     margin-bottom: 15px;
@@ -436,7 +455,8 @@ nav a.active {
     -webkit-box-orient: vertical;
     line-height: 1.4; /* 保持行高为1.4 */
     font-weight: 600;
-    word-break: break-word; /* 允许在单词内换行，避免长单词挤在一行 */
+    word-break: normal; /* 不在单词中间断行 */
+    white-space: normal; /* 允许标题自然换行 */
     hyphens: auto; /* 在适当的位置添加连字符 */
 }
 
@@ -449,10 +469,11 @@ nav a.active {
 
 .product-note {
     font-size: 12px;
-    color: #444;
-    margin: 4px 0;
+    color: #666;
+    line-height: 1.4;
+    margin: 2px 0;
     margin-top: auto;
-    padding-top: 6px;
+    padding-top: 4px;
     border-top: 1px dashed #eee;
 }
 
@@ -729,7 +750,6 @@ nav a.active {
         overflow: hidden;
         transition: all 0.3s ease;
         box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        border-top: 1px solid #f0f0f0;
     }
 
     nav.active {
