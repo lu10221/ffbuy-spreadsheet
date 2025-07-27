@@ -88,11 +88,20 @@ function loadAllProducts() {
     const baseUrl = 'https://opensheet.elk.sh/1hs4cXFLQRhdR8MfQ0vt0oMXhXplksGbU9vzkhO46J6A/';
     const productsContainer = document.getElementById('products-container');
     
-    // Show loading indicator for global search
-    const loadingIndicator = document.createElement('div');
-    loadingIndicator.className = 'global-loading-indicator';
-    loadingIndicator.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading all products...';
-    productsContainer.appendChild(loadingIndicator);
+    // 移除所有现有的全局加载指示器，确保只有一个
+    const existingIndicators = document.querySelectorAll('.global-loading-indicator');
+    existingIndicators.forEach(indicator => indicator.remove());
+    
+    // 检查是否已经有其他加载指示器
+    const otherLoadingIndicator = document.querySelector('.loading-indicator');
+    
+    // 只有在没有其他加载指示器的情况下才创建全局加载指示器
+    if (!otherLoadingIndicator) {
+        const loadingIndicator = document.createElement('div');
+        loadingIndicator.className = 'global-loading-indicator';
+        loadingIndicator.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading all products...';
+        productsContainer.appendChild(loadingIndicator);
+    }
     
     // Create promises for all category fetches
     const fetchPromises = productCategories.map(category => {
@@ -136,10 +145,10 @@ function loadAllProducts() {
             globalProducts = allProducts;
             isLoadingGlobalProducts = false;
             
-            // Remove loading indicator
-            const loadingIndicator = document.querySelector('.global-loading-indicator');
-            if (loadingIndicator) {
-                loadingIndicator.remove();
+            // 只移除全局加载指示器，不影响其他加载指示器
+            const globalLoadingIndicator = document.querySelector('.global-loading-indicator');
+            if (globalLoadingIndicator) {
+                globalLoadingIndicator.remove();
             }
             
             // If there's an active search term, perform search with loaded data
@@ -231,6 +240,12 @@ function performGlobalSearch(searchTerm) {
                             <img src="${product.ztURL}" class="product-image" alt="${product.spbt}">
                             <div class="product-info">
                                 <div class="product-title">${product.spbt}</div>
+                                <div class="product-subtitle">${product.category || 'Premium'} | ${product.brand || 'Quality Product'}</div>
+                                
+                                <div class="product-note">
+                                  <i class="fas fa-external-link-alt"></i> Click to visit <strong style="color: #0066cc;">CNFANS</strong> official ordering page
+                                </div>
+                                
                                 <div class="product-price">
                                     <div>
                                         <span class="us-price">${product.US || '--'}</span>

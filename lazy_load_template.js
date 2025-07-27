@@ -109,6 +109,12 @@ function loadMoreProducts() {
                     <img src="${product.ztURL}" class="product-image" alt="${product.spbt}">
                     <div class="product-info">
                         <div class="product-title">${product.spbt}</div>
+                        <div class="product-subtitle">${product.category || 'Premium'} | ${product.brand || 'Quality Product'}</div>
+                        
+                        <div class="product-note">
+                          <i class="fas fa-external-link-alt"></i> Click to visit <strong>CNFANS</strong> official ordering page
+                        </div>
+                        
                         <div class="product-price">
                             <div>
                                 <span class="us-price">${product.US || '--'}</span>

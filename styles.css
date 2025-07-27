@@ -14,6 +14,26 @@ body {
     line-height: 1.6;
 }
 
+/* Top Info Bar Styles */
+.top-info-bar {
+    background: #f8f9fa;
+    padding: 10px 12px;
+    text-align: center;
+    font-size: 15px;
+    color: #444;
+    line-height: 1.5;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.top-info-bar i {
+    margin-right: 6px;
+    color: #3c91e6;
+}
+
+.top-info-bar strong {
+    color: #0056b3;
+}
+
 /* Header Styles */
 header {
     background-color: white;
@@ -24,25 +44,52 @@ header {
     transition: all 0.3s ease;
 }
 
+/* 隐藏中间的汉堡菜单按钮 */
+.header-top .mobile-menu-btn {
+    display: none !important;
+}
+
 .header-top {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
     padding: 15px 25px;
 }
 
+@media (max-width: 768px) {
+    .header-top {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .nav-links {
+        margin-top: 15px;
+        justify-content: center;
+    }
+    
+    .nav-links a {
+        margin: 3px 5px;
+        padding: 6px 10px;
+        font-size: 13px;
+    }
+}
+
 .header-bottom {
     padding: 0 25px 15px 25px;
+    position: relative;
+    z-index: 100;
 }
 
 .logo {
-    font-size: 20px;
+    font-size: 24px;
     font-weight: bold;
     color: #ff6347;
     text-decoration: none;
     transition: transform 0.2s ease, color 0.2s ease;
     display: flex;
     align-items: center;
+    margin-bottom: 15px;
+    justify-content: center;
 }
 
 .logo:hover {
@@ -93,19 +140,22 @@ header {
 .nav-links {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 .nav-links a {
-    margin-left: 20px;
+    margin: 5px 8px;
     text-decoration: none;
     color: #333;
     font-size: 14px;
     font-weight: 500;
-    padding: 6px 12px;
+    padding: 8px 12px;
     border-radius: 20px;
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
+    white-space: nowrap;
 }
 
 .nav-links a i {
@@ -117,11 +167,17 @@ header {
     background-color: rgba(255,99,71,0.08);
 }
 
+.nav-links a.active {
+    color: #ff6347;
+    background-color: rgba(255,99,71,0.1);
+    font-weight: 600;
+}
+
 /* Navigation Bar Styles */
 nav {
-    display: flex;
+    display: none;
     justify-content: flex-start;
-    padding: 12px 20px;
+    padding: 0px 0px;
     background-color: white;
     margin-bottom: 15px;
     overflow-x: auto;
@@ -144,6 +200,104 @@ nav::-webkit-scrollbar-track {
 nav::-webkit-scrollbar-thumb {
     background-color: #ff6347;
     border-radius: 10px;
+}
+
+/* 信任保障按钮和弹窗样式 */
+#trustBtn.trust-icon {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 50%;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+    margin-bottom: 0px;
+    z-index: 1000;
+}
+
+#trustBtn.trust-icon:hover {
+    transform: scale(1.1);
+}
+
+/* 当trustBtn不在浮动按钮容器中时的样式 */
+#trustBtn:not(.trust-icon) {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    width: 40px;
+    height: 40px;
+    background-color: #ff6347;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+#trustBtn:not(.trust-icon):hover {
+    transform: scale(1.1);
+    background-color: #ff4500;
+}
+
+#trustModal {
+    display: none;
+    position: fixed;
+    bottom: 100px;
+    left: 100px;
+    background-color: white;
+    padding: 20px 25px;
+    border-radius: 15px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.15);
+    width: 300px;
+    z-index: 999;
+    font-size: 14px;
+    line-height: 1.6;
+    border-left: 5px solid #ff6347;
+    animation: fadeIn 0.3s ease-in-out;
+    transform-origin: bottom left;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+#trustModal p {
+    margin-bottom: 12px;
+    color: #333;
+}
+
+#trustModal p:last-child {
+    margin-bottom: 0;
+}
+
+#trustModal p strong {
+    color: #ff6347;
+    font-size: 18px;
+    display: block;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 8px;
+}
+
+#closeTrustModal:hover {
+    background-color: #f0f0f0;
+    border-color: #ccc;
+    color: #333;
+    transform: scale(1.05);
 }
 
 nav a {
@@ -267,26 +421,43 @@ nav a.active {
 .product-info {
     padding: 12px;
     border-top: 1px solid #f5f5f5;
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - 180px);
 }
 
 .product-title {
-    margin: 0 0 8px 0;
+    margin: 0 0 4px 0;
     font-size: 14px;
     color: #333;
-    height: 40px;
     overflow: hidden;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
-    line-height: 1.4;
-    font-weight: 500;
+    line-height: 1.4; /* 保持行高为1.4 */
+    font-weight: 600;
+    word-break: break-word; /* 允许在单词内换行，避免长单词挤在一行 */
+    hyphens: auto; /* 在适当的位置添加连字符 */
+}
+
+.product-subtitle {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 6px;
+    font-weight: 400;
+}
+
+.product-note {
+    font-size: 12px;
+    color: #444;
+    margin: 4px 0;
+    margin-top: auto;
+    padding-top: 6px;
+    border-top: 1px dashed #eee;
 }
 
 .product-price {
-    font-weight: bold;
-    color: #ff6347;
-    font-size: 16px;
-    margin: 0;
+    margin: 6px 0 0 0;
     display: flex;
     align-items: center;
 }
@@ -301,13 +472,14 @@ nav a.active {
 .us-price {
     font-weight: bold;
     font-size: 15px;
-    color: #ff6347;
+    color: #e63946; /* 稍微调整红色，使其更加醒目 */
 }
 
 .eur-price {
-    color: #666;
+    color: #888; /* 更浅的灰色，降低视觉优先级 */
     font-size: 13px;
     margin-left: 8px;
+    font-weight: normal; /* 确保副币种不加粗 */
 }
 
 .no-products, .error-message {
@@ -363,6 +535,27 @@ nav a.active {
     flex-direction: column;
     gap: 10px;
     z-index: 1000;
+    transition: all 0.3s ease;
+}
+
+.floating-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    max-height: 200px; /* 足够容纳内容的高度 */
+}
+
+.floating-content.collapsed {
+    max-height: 0;
+    opacity: 0;
+    margin-top: 0;
+}
+
+.toggle-btn {
+    background-color: #0088cc;
+    z-index: 1001;
 }
 
 .float-btn {
@@ -373,9 +566,9 @@ nav a.active {
     justify-content: center;
     align-items: center;
     color: white;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.25);
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: all 0.3s ease;
     font-size: 18px;
 }
 
@@ -383,18 +576,23 @@ nav a.active {
     background-color: #0088cc;
 }
 
-.telegram-icon, .whatsapp-icon {
+.float-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+}
+
+.telegram-icon, .whatsapp-icon, .trust-icon {
     width: 60px;
     height: 60px;
     object-fit: contain;
     cursor: pointer;
     transition: all 0.3s ease;
     border-radius: 50%;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.25);
     margin-bottom: 0px;
 }
 
-.telegram-icon:hover {
+.telegram-icon:hover, .trust-icon:hover {
     transform: scale(1.1);
 }
 
@@ -415,23 +613,23 @@ nav a.active {
     opacity: 0;
     transition: all 0.3s ease;
     z-index: 99;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.25);
     font-size: 18px;
 }
 
 .back-to-top:hover {
     background-color: #ff4500;
     transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.3);
 }
 
 .back-to-top.visible {
     opacity: 1;
 }
 
-.telegram-icon:hover, .whatsapp-icon:hover {
-    transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+.telegram-icon:hover, .whatsapp-icon:hover, .trust-icon:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.3);
 }
 
 /* Responsive Styles */
@@ -470,6 +668,15 @@ nav a.active {
         width: 100%;
     }
     
+    /* 在移动端显示汉堡菜单按钮 */
+    .header-top .mobile-menu-btn {
+        display: block !important;
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        z-index: 1000;
+    }
+    
     .search-box {
         width: 100%;
         padding: 8px 12px;
@@ -482,21 +689,25 @@ nav a.active {
     }
     
     .nav-links a:first-child {
-        display: inline;
+        display: none; /* 隐藏移动端搜索框上方的"HOT PRODUCTS"链接 */
         margin-left: 0;
         padding: 5px 8px;
     }
 
-    /* Mobile Navigation */
-    .mobile-menu-btn {
-        display: block;
-        cursor: pointer;
-        font-size: 20px;
-        color: #333;
-        transition: transform 0.2s ease;
-        padding: 5px;
-        border-radius: 4px;
-    }
+/* Mobile Navigation */
+.mobile-menu-btn {
+    display: none !important; /* 强制在PC端隐藏 */
+    cursor: pointer;
+    font-size: 20px;
+    color: #333;
+    transition: transform 0.2s ease;
+    padding: 5px;
+    border-radius: 4px;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 1000; /* 确保在最上层 */
+}
     
     .mobile-menu-btn:hover {
         transform: scale(1.1);
@@ -505,26 +716,28 @@ nav a.active {
     
     /* Mobile Navigation styles */
     nav {
+        display: flex;
         flex-direction: column;
         align-items: flex-start;
         background-color: white;
         position: fixed;
-        top: 100px; /* Adjusted to account for both header-top and header-bottom */
+        top: 120px; /* 调整顶部距离，避免被搜索框遮挡 */
+        z-index: 1001; /* 确保在搜索框之上 */
         left: 0;
         width: 100%;
         height: 0;
         overflow: hidden;
         transition: all 0.3s ease;
-        z-index: 99;
         box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         border-top: 1px solid #f0f0f0;
     }
 
     nav.active {
         height: auto;
-        padding: 10px 0;
+        padding: 0px 0;
         overflow-y: auto;
         max-height: 80vh;
+        top: 140px; /* 确保激活状态下也保持正确的位置 */
     }
 
     nav a {
@@ -545,6 +758,12 @@ nav a.active {
         text-align: center;
         font-size: 16px;
         color: #ff6347;
+    }
+
+    /* 隐藏ELECTRONICOS菜单项 */
+    nav a[href="ELECTRONICOS.html"],
+    .nav-links a[href="ELECTRONICOS.html"] {
+        display: none !important;
     }
 
     nav a:last-child {
@@ -614,13 +833,45 @@ nav a.active {
         height: 140px;
     }
     
+    .product-info {
+        padding: 8px;
+        height: calc(100% - 140px);
+    }
+    
     .product-title {
         font-size: 11px;
-        height: 30px;
+        margin: 0 0 2px 0;
+        -webkit-line-clamp: 2;
+        font-weight: 600;
+        line-height: 1.3;
+    }
+    
+    .product-subtitle {
+        font-size: 10px;
+        margin-bottom: 3px;
+        line-height: 1.2;
+    }
+    
+    .product-note {
+        font-size: 9px;
+        margin-top: auto;
+        padding-top: 4px;
+        border-top: 1px dashed #eee;
+        line-height: 1.2;
     }
     
     .product-price {
-        font-size: 13px;
+        font-size: 12px;
+        margin: 3px 0 0 0;
+    }
+    
+    .us-price {
+        font-size: 12px;
+    }
+    
+    .eur-price {
+        font-size: 10px;
+        margin-left: 4px;
     }
     
     /* Navigation adjustments for very small screens */

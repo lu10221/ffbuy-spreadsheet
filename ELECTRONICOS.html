@@ -14,16 +14,28 @@
     <title>ELECTRONICOS - $FFBuy SpreadSheet</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link rel="stylesheet" href="global-search.css">
+    <link rel="stylesheet" href="global-search.css">    
+    <script src="trust-info.js"></script>
+    <script src="product-trust-info.js"></script>
 
 </head>
 <body>
+    <div class="top-info-bar"> 
+   <i class="fas fa-shield-alt"></i> 
+   This page displays products only. Orders are securely processed via <strong>CNFANS Platform</strong> with buyer protection & after-sales support. 
+ </div>
     <header>
         <div class="header-top">
             <a href="index.html" class="logo">$FFBuy SpreadSheet</a>
             <div class="nav-links">
-                <a href="index.html"><i class="fas fa-home"></i> Home</a>
-                <a href="#"><i class="fas fa-th-large"></i> All Categories <i class="fas fa-chevron-down"></i></a>
+                <a href="HOT PRODUCTS.html"><i class="fas fa-fire"></i> HOT PRODUCTS</a>
+                <a href="T-Shirt.html"><i class="fas fa-tshirt"></i> T-Shirt</a>
+                <a href="Pants.html"><i class="fas fa-socks"></i> Pants</a>
+                <a href="Shoes.html"><i class="fas fa-shoe-prints"></i> Shoes</a>
+                <a href="Set.html"><i class="fas fa-layer-group"></i> Set</a>
+                <a href="Accessories.html"><i class="fas fa-gem"></i> Accessories</a>
+                <a href="Hoodie Sweatshirt.html"><i class="fas fa-tshirt"></i> Hoodie/Sweatshirt</a>
+                <a href="ELECTRONICOS.html" class="active"><i class="fas fa-laptop"></i> ELECTRONICOS</a>
             </div>
             <div class="mobile-menu-btn">
                 <i class="fas fa-bars"></i>
@@ -36,6 +48,15 @@
             </div>
         </div>
     </header>
+
+<div style="text-align: center; margin: 12px 0 18px;">
+    <div style="font-size: 13px; color: #555; margin-bottom: 6px;"><strong>Secure payments</strong> supported by</div>
+    <div style="display: inline-flex; align-items: center; gap: 12px;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" height="24" style="padding: 0 4px; vertical-align: middle;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png" alt="Visa" height="24" style="padding: 0 4px; vertical-align: middle;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Mastercard-logo.png" alt="Mastercard" height="24" style="padding: 0 4px; vertical-align: middle;">
+    </div>
+</div>
 
     <nav>
         <a href="HOT PRODUCTS.html"><i class="fas fa-fire"></i> HOT PRODUCTS</a>
@@ -57,11 +78,19 @@
         </div>
     </div>
 
-<div class="floating-buttons">
-    <img src="img/telegram.png" alt="Telegram" class="telegram-icon">
-    <img src="img/ws.png" alt="WhatsApp" class="whatsapp-icon">
-    <div class="float-btn back-to-top"><i class="fas fa-arrow-up"></i></div>
+<div class="floating-buttons" id="floatingButtons">
+    <div class="float-btn toggle-btn" id="toggleFloatingBtn"><i class="fas fa-headset"></i></div>
+    <div class="floating-content" id="floatingContent">
+        <img src="img/query.png" alt="Trust Guarantee" class="trust-icon" id="trustBtn">
+        <img src="img/telegram.png" alt="Telegram" class="telegram-icon">
+        <img src="img/ws.png" alt="WhatsApp" class="whatsapp-icon">
+    </div>
 </div>
+<div class="float-btn back-to-top"><i class="fas fa-arrow-up"></i></div>
+
+<!-- Include the centralized floating buttons script -->
+<script src="floating-buttons.js"></script>
+<script src="trust-info.js"></script>
 
 <script>
     // Document ready function
@@ -69,13 +98,7 @@
         // Fetch products from JSON API
         fetchProducts();
         
-        // WhatsApp icon functionality
-        const whatsappIcon = document.querySelector('.whatsapp-icon');
-        if (whatsappIcon) {
-            whatsappIcon.addEventListener('click', function() {
-                window.open('https://wa.me/message/INCWNKPORGSSN1?utm_source=facebook&utm_medium=ads&utm_campaign=ffbuywhatsapp_autojoin', '_blank');
-            });
-        }
+        // Note: WhatsApp icon functionality has been moved to floating-buttons.js for centralized management
         
         // Product filter functionality
         const searchBox = document.querySelector('.search-box');
@@ -135,31 +158,8 @@
             });
         }
         
-        // Back to top button functionality
-        const backToTopBtn = document.querySelector('.back-to-top');
-        
-        backToTopBtn.addEventListener('click', function() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
-        
-        // Show/hide back to top button based on scroll position
-        window.addEventListener('scroll', function() {
-            if (window.pageYOffset > 300) {
-                backToTopBtn.style.opacity = '1';
-            } else {
-                backToTopBtn.style.opacity = '0.7';
-            }
-        });
-        
-        // Telegram icon functionality
-        const telegramIcon = document.querySelector('.telegram-icon');
-        
-        telegramIcon.addEventListener('click', function() {
-            window.open('https://t.me/cnw2cfind', '_blank');
-        });
+        // Note: Back to top button and Telegram icon functionality 
+        // has been moved to floating-buttons.js for centralized management
     });
     
     // 全局变量，用于懒加载功能
@@ -186,12 +186,10 @@
         // 设置超时，如果API请求时间过长，显示部分UI
         const timeoutPromise = new Promise((_, reject) => {
             setTimeout(() => {
-                reject(new Error('请求超时，请检查网络连接'));
-            }, 10000); // 10秒超时
-        });
+                reject(new Error('请求超时，请检查网络连�?));
+            }, 10000); // 10秒超�?        });
         
-        // 标记为正在加载
-        isLoading = true;
+        // 标记为正在加�?        isLoading = true;
         
         // 使用Promise.race在超时和正常请求之间竞争
         Promise.race([fetch(apiUrl), timeoutPromise])
@@ -208,23 +206,18 @@
                     loadingIndicator.remove();
                 }
                 
-                // 保存所有产品数据
-                allProducts = data.filter(product => product.spbt && product.ztURL && product.spURL);
+                // 保存所有产品数�?                allProducts = data.filter(product => product.spbt && product.ztURL && product.spURL);
                 
-                // 如果没有产品数据，显示提示信息
-                if (allProducts.length === 0) {
+                // 如果没有产品数据，显示提示信�?                if (allProducts.length === 0) {
                     productsContainer.innerHTML = '<div class="no-products">暂无产品数据</div>';
                     allProductsLoaded = true;
                 } else {
-                    // 加载第一页产品
-                    loadMoreProducts();
+                    // 加载第一页产�?                    loadMoreProducts();
                     
-                    // 添加滚动事件监听器，实现懒加载
-                    window.addEventListener('scroll', handleScroll);
+                    // 添加滚动事件监听器，实现懒加�?                    window.addEventListener('scroll', handleScroll);
                 }
                 
-                // 标记为加载完成
-                isLoading = false;
+                // 标记为加载完�?                isLoading = false;
             })
             .catch(error => {
                 console.error('Error fetching products:', error);
@@ -233,26 +226,22 @@
             });
     }
     
-    // 加载更多产品的函数
-    function loadMoreProducts() {
+    // 加载更多产品的函�?    function loadMoreProducts() {
         if (isLoading || allProductsLoaded) return;
         
         isLoading = true;
         const productsContainer = document.getElementById('products-container');
         
-        // 计算当前页的起始和结束索引
-        const startIndex = (currentPage - 1) * productsPerPage;
+        // 计算当前页的起始和结束索�?        const startIndex = (currentPage - 1) * productsPerPage;
         const endIndex = Math.min(startIndex + productsPerPage, allProducts.length);
         
-        // 如果已经加载了所有产品，则不再加载
-        if (startIndex >= allProducts.length) {
+        // 如果已经加载了所有产品，则不再加�?        if (startIndex >= allProducts.length) {
             allProductsLoaded = true;
             isLoading = false;
             return;
         }
         
-        // 创建加载指示器
-        const loadingIndicator = document.createElement('div');
+        // 创建加载指示�?        const loadingIndicator = document.createElement('div');
         loadingIndicator.className = 'loading-more-indicator';
         loadingIndicator.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 加载更多产品...';
         productsContainer.appendChild(loadingIndicator);
@@ -274,17 +263,14 @@
                         <div class="product-info">
                             <div class="product-title">${product.spbt}</div>
                             <div class="product-price">
-                                <div>
-                                    <span class="us-price">${product.US || '--'}</span>
-                                    <span class="eur-price">${product.EUR || '--'}</span>
-                                </div>
+                                <span class="us-price">${product.US || '--'}</span>
+                                <span class="eur-price">${product.EUR || '--'}</span>
                             </div>
                         </div>
                     </a>
                 `;
                 
-                // 移除加载指示器
-                if (loadingIndicator) {
+                // 移除加载指示�?                if (loadingIndicator) {
                     loadingIndicator.remove();
                 }
                 
@@ -294,22 +280,18 @@
             // 增加页码
             currentPage++;
             
-            // 检查是否已加载所有产品
-            if (endIndex >= allProducts.length) {
+            // 检查是否已加载所有产�?            if (endIndex >= allProducts.length) {
                 allProductsLoaded = true;
-                // 可以添加一个提示，表示已加载所有产品
-                const endMessage = document.createElement('div');
+                // 可以添加一个提示，表示已加载所有产�?                const endMessage = document.createElement('div');
                 endMessage.className = 'end-message';
-                endMessage.textContent = '已加载全部产品';
+                endMessage.textContent = '已加载全部产�?;
                 productsContainer.appendChild(endMessage);
             }
             
             isLoading = false;
-        }, 300); // 300毫秒延迟，模拟网络请求
-    }
+        }, 300); // 300毫秒延迟，模拟网络请�?    }
     
-    // 处理滚动事件的函数
-     function handleScroll() {
+    // 处理滚动事件的函�?     function handleScroll() {
          // 如果正在加载或已加载所有产品，则不处理
          if (isLoading || allProductsLoaded) return;
          
@@ -330,3 +312,4 @@
     <script src="global-search.js"></script>
 </body>
 </html>
+

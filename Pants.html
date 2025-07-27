@@ -14,16 +14,27 @@
     <title>Pants - $FFBuy SpreadSheet</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link rel="stylesheet" href="global-search.css">
+    <link rel="stylesheet" href="global-search.css">    
+    <script src="trust-info.js"></script>
+    <script src="product-trust-info.js"></script>
 
 </head>
 <body>
+    <div class="top-info-bar"> 
+   <i class="fas fa-shield-alt"></i> 
+   This page displays products only. Orders are securely processed via <strong>CNFANS Platform</strong> with buyer protection & after-sales support. 
+ </div>
     <header>
         <div class="header-top">
             <a href="index.html" class="logo">$FFBuy SpreadSheet</a>
             <div class="nav-links">
-                <a href="index.html"><i class="fas fa-home"></i> Home</a>
-                <a href="#"><i class="fas fa-th-large"></i> All Categories <i class="fas fa-chevron-down"></i></a>
+                <a href="HOT PRODUCTS.html"><i class="fas fa-fire"></i> HOT PRODUCTS</a>
+                <a href="T-Shirt.html"><i class="fas fa-tshirt"></i> T-Shirt</a>
+                <a href="Pants.html" class="active"><i class="fas fa-socks"></i> Pants</a>
+                <a href="Shoes.html"><i class="fas fa-shoe-prints"></i> Shoes</a>
+                <a href="Set.html"><i class="fas fa-layer-group"></i> Set</a>
+                <a href="Accessories.html"><i class="fas fa-gem"></i> Accessories</a>
+                <a href="Hoodie Sweatshirt.html"><i class="fas fa-tshirt"></i> Hoodie/Sweatshirt</a>
             </div>
             <div class="mobile-menu-btn">
                 <i class="fas fa-bars"></i>
@@ -37,6 +48,15 @@
         </div>
     </header>
 
+<div style="text-align: center; margin: 12px 0 18px;">
+    <div style="font-size: 13px; color: #555; margin-bottom: 6px;"><strong>Secure payments</strong> supported by</div>
+    <div style="display: inline-flex; align-items: center; gap: 12px;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" height="24" style="padding: 0 4px; vertical-align: middle;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png" alt="Visa" height="24" style="padding: 0 4px; vertical-align: middle;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Mastercard-logo.png" alt="Mastercard" height="24" style="padding: 0 4px; vertical-align: middle;">
+    </div>
+</div>
+
     <nav>
         <a href="HOT PRODUCTS.html"><i class="fas fa-fire"></i> HOT PRODUCTS</a>
         <a href="T-Shirt.html"><i class="fas fa-tshirt"></i> T-Shirt</a>
@@ -45,7 +65,7 @@
         <a href="Set.html"><i class="fas fa-layer-group"></i> Set</a>
         <a href="Accessories.html"><i class="fas fa-gem"></i> Accessories</a>
         <a href="Hoodie Sweatshirt.html"><i class="fas fa-tshirt"></i> Hoodie/Sweatshirt</a>
-        <!-- ELECTRONICOS page hidden as requested -->
+        <a href="ELECTRONICOS.html"><i class="fas fa-laptop"></i> ELECTRONICOS</a>
     </nav>
 
     <div class="container">
@@ -57,25 +77,25 @@
         </div>
     </div>
 
-<div class="floating-buttons">
-    <img src="img/telegram.png" alt="Telegram" class="telegram-icon">
-    <img src="img/ws.png" alt="WhatsApp" class="whatsapp-icon">
-    <div class="float-btn back-to-top"><i class="fas fa-arrow-up"></i></div>
+<div class="floating-buttons" id="floatingButtons">
+    <div class="float-btn toggle-btn" id="toggleFloatingBtn"><i class="fas fa-headset"></i></div>
+    <div class="floating-content" id="floatingContent">
+        <img src="img/query.png" alt="Trust Guarantee" class="trust-icon" id="trustBtn">
+        <img src="img/telegram.png" alt="Telegram" class="telegram-icon">
+        <img src="img/ws.png" alt="WhatsApp" class="whatsapp-icon">
+    </div>
 </div>
+<div class="float-btn back-to-top"><i class="fas fa-arrow-up"></i></div>
 
+<script src="floating-buttons.js"></script>
+<script src="trust-info.js"></script>
 <script>
     // Document ready function
     document.addEventListener('DOMContentLoaded', function() {
         // Fetch products from JSON API
         fetchProducts();
         
-        // WhatsApp icon functionality
-        const whatsappIcon = document.querySelector('.whatsapp-icon');
-        if (whatsappIcon) {
-            whatsappIcon.addEventListener('click', function() {
-                window.open('https://wa.me/message/INCWNKPORGSSN1?utm_source=facebook&utm_medium=ads&utm_campaign=ffbuywhatsapp_autojoin', '_blank');
-            });
-        }
+        // WhatsApp图标功能已移至floating-buttons.js
         
         // Product filter functionality
         const searchBox = document.querySelector('.search-box');
@@ -135,31 +155,7 @@
             });
         }
         
-        // Back to top button functionality
-        const backToTopBtn = document.querySelector('.back-to-top');
-        
-        backToTopBtn.addEventListener('click', function() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
-        
-        // Show/hide back to top button based on scroll position
-        window.addEventListener('scroll', function() {
-            if (window.pageYOffset > 300) {
-                backToTopBtn.style.opacity = '1';
-            } else {
-                backToTopBtn.style.opacity = '0.7';
-            }
-        });
-        
-        // Telegram icon functionality
-        const telegramIcon = document.querySelector('.telegram-icon');
-        
-        telegramIcon.addEventListener('click', function() {
-            window.open('https://t.me/cnw2cfind', '_blank');
-        });
+        // 浮动按钮功能已移至floating-buttons.js
     });
     
     // Global variables for lazy loading
@@ -274,10 +270,8 @@
                         <div class="product-info">
                             <div class="product-title">${product.spbt}</div>
                             <div class="product-price">
-                                <div>
-                                    <span class="us-price">${product.US || '--'}</span>
-                                    <span class="eur-price">${product.EUR || '--'}</span>
-                                </div>
+                                <span class="us-price">${product.US || '--'}</span>
+                                <span class="eur-price">${product.EUR || '--'}</span>
                             </div>
                         </div>
                     </a>
@@ -330,3 +324,4 @@
     <script src="global-search.js"></script>
 </body>
 </html>
+
