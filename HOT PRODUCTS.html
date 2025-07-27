@@ -22,7 +22,7 @@
 <body>
     <div class="top-info-bar"> 
    <i class="fas fa-shield-alt"></i> 
-   This page displays products only. Orders are securely processed via <strong>CNFANS Platform</strong> with buyer protection & after-sales support. 
+   This page displays products only. Orders are securely processed via <strong style="color:#2476db; font-weight:600;">CNFANS Platform</strong> with buyer protection & after-sales support. 
  </div>
     <header>
         <div class="header-top">
@@ -171,11 +171,11 @@
         isLoading = true;
         
         // Create a separate loading indicator that doesn't block page interaction
-        // 移除所有现有的加载指示器，确保只有一个
+        // 移除所有现有的加载指示器，确保只有一�?
         const existingIndicators = document.querySelectorAll('.loading-indicator');
         existingIndicators.forEach(indicator => indicator.remove());
         
-        // 创建新的加载指示器
+        // 创建新的加载指示�?
         const indicator = document.createElement('div');
         indicator.className = 'loading-indicator';
         indicator.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading products...';
@@ -249,7 +249,7 @@
             return;
         }
         
-        // 移除所有现有的加载更多指示器，确保只有一个
+        // 移除所有现有的加载更多指示器，确保只有一�?
         const existingIndicators = document.querySelectorAll('.loading-more-indicator');
         existingIndicators.forEach(indicator => indicator.remove());
         
@@ -330,4 +330,6 @@
     <script src="global-search.js"></script>
 </body>
 </html>
+
+
 

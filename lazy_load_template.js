@@ -9,6 +9,7 @@ let allProductsLoaded = false;
 function fetchProductsWithLazyLoad(apiEndpoint) {
     const productsContainer = document.getElementById('products-container');
     const loadingIndicator = document.querySelector('.loading-indicator');
+    // 使用原始endpoint，不进行任何替换
     const apiUrl = `https://opensheet.elk.sh/1hs4cXFLQRhdR8MfQ0vt0oMXhXplksGbU9vzkhO46J6A/${apiEndpoint}`;
     
     // 创建一个单独的加载指示器，不会阻止页面交互
@@ -112,7 +113,7 @@ function loadMoreProducts() {
                         <div class="product-subtitle">${product.category || 'Premium'} | ${product.brand || 'Quality Product'}</div>
                         
                         <div class="product-note">
-                          <i class="fas fa-external-link-alt"></i> Click to visit <strong>CNFANS</strong> official ordering page
+                          <i class="fas fa-external-link-alt"></i> Click to visit <strong style="color:#2476db; font-weight:600;">CNFANS</strong> official ordering page
                         </div>
                         
                         <div class="product-price">

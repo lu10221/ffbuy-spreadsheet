@@ -22,11 +22,13 @@
 <body>
     <div class="top-info-bar"> 
    <i class="fas fa-shield-alt"></i> 
-   This page displays products only. Orders are securely processed via <strong>CNFANS Platform</strong> with buyer protection & after-sales support. 
+   This page displays products only. Orders are securely processed via <strong style="color:#2476db; font-weight:600;">CNFANS Platform</strong> with buyer protection & after-sales support. 
  </div>
+    <div class="fixed-logo-bar">
+        <a href="index.html" class="logo">$FFBuy SpreadSheet</a>
+    </div>
     <header>
         <div class="header-top">
-            <a href="index.html" class="logo">$FFBuy SpreadSheet</a>
             <div class="nav-links">
                 <a href="HOT PRODUCTS.html" class="active"><i class="fas fa-fire"></i> HOT PRODUCTS</a>
                 <a href="T-Shirt.html"><i class="fas fa-tshirt"></i> T-Shirt</a>
@@ -168,7 +170,10 @@
     function fetchHotProducts() {
         const productsContainer = document.getElementById('products-container');
         const loadingIndicator = document.querySelector('.loading-indicator');
-        const apiUrl = 'https://opensheet.elk.sh/1hs4cXFLQRhdR8MfQ0vt0oMXhXplksGbU9vzkhO46J6A/HOT PRODUCTS';
+        // 修复URL编码问题，将空格替换为%20
+        const category = 'HOT PRODUCTS';
+        const encodedCategory = category.replace(/ /g, '%20');
+        const apiUrl = 'https://opensheet.elk.sh/1hs4cXFLQRhdR8MfQ0vt0oMXhXplksGbU9vzkhO46J6A/' + encodedCategory;
         
         // Create a separate loading indicator that doesn't block page interaction
         if (!loadingIndicator) {
@@ -323,4 +328,5 @@
     <script src="global-search.js"></script>
 </body>
 </html>
+
 

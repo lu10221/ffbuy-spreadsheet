@@ -8,7 +8,7 @@ const productCategories = [
     { name: 'Shoes', endpoint: 'Shoes' },
     { name: 'Set', endpoint: 'Set' },
     { name: 'Accessories', endpoint: 'Accessories' },
-    { name: 'Hoodie Sweatshirt', endpoint: 'Hoodie Sweatshirt' }
+    { name: 'Hoodie Sweatshirt', endpoint: 'Hoodie.Sweatshirt' }
 ];
 
 // Global products storage
@@ -105,7 +105,9 @@ function loadAllProducts() {
     
     // Create promises for all category fetches
     const fetchPromises = productCategories.map(category => {
-        return fetch(baseUrl + encodeURIComponent(category.endpoint))
+        // 直接使用原始endpoint，不进行任何替换
+        console.log(`Fetching category: ${category.name}, endpoint: ${category.endpoint}`);
+        return fetch(baseUrl + category.endpoint)
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`Failed to fetch ${category.name}`);
@@ -119,11 +121,14 @@ function loadAllProducts() {
                     .map(product => ({
                         ...product,
                         category: category.name,
-                        categoryUrl: `${category.endpoint.replace(/ /g, '%20')}.html`
+                        categoryUrl: `${category.endpoint}.html`
                     }));
             })
             .catch(error => {
                 console.error(`Error fetching ${category.name}:`, error);
+                // 添加更详细的错误日志，包括完整URL和endpoint信息
+        console.log(`Failed URL: ${baseUrl + encodedEndpoint}`);
+        console.log(`Category endpoint: ${category.endpoint}, Encoded endpoint: ${encodedEndpoint}`);
                 return []; // Return empty array on error
             });
     });
@@ -243,7 +248,7 @@ function performGlobalSearch(searchTerm) {
                                 <div class="product-subtitle">${product.category || 'Premium'} | ${product.brand || 'Quality Product'}</div>
                                 
                                 <div class="product-note">
-                                  <i class="fas fa-external-link-alt"></i> Click to visit <strong style="color: #0066cc;">CNFANS</strong> official ordering page
+                                  <i class="fas fa-external-link-alt"></i> Click to visit <strong style="color: #2476db; font-weight:600;">CNFANS</strong> official ordering page
                                 </div>
                                 
                                 <div class="product-price">
