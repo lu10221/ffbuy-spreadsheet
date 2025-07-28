@@ -86,6 +86,21 @@
         </div>
     </div>
 
+<!-- 商品详情弹窗 -->
+<div class="product-detail-modal" id="productDetailModal">
+    <div class="product-detail-content">
+        <div class="product-detail-header">
+            <h2 class="product-detail-title">Product Details</h2>
+            <button class="product-detail-close" id="closeDetailModal">&times;</button>
+        </div>
+        <div class="product-detail-body" id="productDetailBody">
+            <div class="product-detail-loading">
+                <i class="fas fa-spinner fa-spin"></i> Loading product details...
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="floating-buttons" id="floatingButtons">
     <div class="float-btn toggle-btn" id="toggleFloatingBtn"><i class="fas fa-headset"></i></div>
     <div class="floating-content" id="floatingContent">
@@ -98,6 +113,8 @@
 
 <script src="floating-buttons.js"></script>
 <script src="trust-info.js"></script>
+<script src="product-detail.js"></script>
+<link rel="stylesheet" href="product-detail-modal.css">
 <script>
     // Document ready function
     document.addEventListener('DOMContentLoaded', function() {
@@ -273,9 +290,36 @@
                 productCard.style.animationDelay = `${(i - startIndex) * 0.03}s`;
                 productCard.classList.add('fade-in');
                 
+                // 从URL中提取商品ID
+                let productID = '';
+                try {
+                    const url = new URL(product.spURL);
+                    const pathParts = url.pathname.split('/');
+                    // 尝试从URL路径中提取商品ID
+                    for (let i = 0; i < pathParts.length; i++) {
+                        if (pathParts[i] && !isNaN(pathParts[i])) {
+                            productID = pathParts[i];
+                            break;
+                        }
+                    }
+                    
+                    // 如果路径中没找到，尝试从查询参数中提取
+                    if (!productID) {
+                        productID = url.searchParams.get('itemID') || 
+                                   url.searchParams.get('id') || 
+                                   url.searchParams.get('productID') || '';
+                    }
+                } catch (e) {
+                    console.error('Error extracting product ID:', e);
+                }
+
+                // 存储商品ID到数据属性
+                productCard.dataset.productId = productID;
+                productCard.dataset.productUrl = product.spURL;
+
                 // Create product HTML
                 productCard.innerHTML = `
-                    <a href="${product.spURL}" target="_blank">
+                    <div class="product-card-inner">
                         <img src="${product.ztURL}" class="product-image" alt="${product.spbt}">
                         <div class="product-info">
                             <div class="product-title">${product.spbt}</div>
@@ -284,8 +328,13 @@
                                 <span class="eur-price">${product.EUR || '--'}</span>
                             </div>
                         </div>
-                    </a>
+                    </div>
                 `;
+                
+                // 添加点击事件，打开详情弹窗
+                productCard.addEventListener('click', function() {
+                    openProductDetail(this.dataset.productId, this.dataset.productUrl, product);
+                });
                 
                 // Remove loading indicator
                 if (loadingIndicator) {
