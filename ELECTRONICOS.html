@@ -1,14 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Google tag (gtag.js) --> 
-   <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZ3110PTYG"></script> 
-   <script> 
-     window.dataLayer = window.dataLayer || []; 
-     function gtag(){dataLayer.push(arguments);} 
-     gtag('js', new Date()); 
-     gtag('config', 'G-DZ3110PTYG'); 
-   </script>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZ3110PTYG"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-DZ3110PTYG');
+
+        // 🔽 自动获取并上报 utm_content 参数
+        const urlParams = new URLSearchParams(window.location.search);
+        const utmContent = urlParams.get('utm_content');
+        if (utmContent) {
+            gtag('event', 'utm_content_event', {
+                utm_content: utmContent
+            });
+        }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ELECTRONICOS - $FFBuy SpreadSheet</title>
@@ -186,10 +195,10 @@
         // 设置超时，如果API请求时间过长，显示部分UI
         const timeoutPromise = new Promise((_, reject) => {
             setTimeout(() => {
-                reject(new Error('请求超时，请检查网络连�?));
-            }, 10000); // 10秒超�?        });
+                reject(new Error('请求超时，请检查网络连�?));
+            }, 10000); // 10秒超�?        });
         
-        // 标记为正在加�?        isLoading = true;
+        // 标记为正在加�?        isLoading = true;
         
         // 使用Promise.race在超时和正常请求之间竞争
         Promise.race([fetch(apiUrl), timeoutPromise])
@@ -206,18 +215,18 @@
                     loadingIndicator.remove();
                 }
                 
-                // 保存所有产品数�?                allProducts = data.filter(product => product.spbt && product.ztURL && product.spURL);
+                // 保存所有产品数�?                allProducts = data.filter(product => product.spbt && product.ztURL && product.spURL);
                 
-                // 如果没有产品数据，显示提示信�?                if (allProducts.length === 0) {
+                // 如果没有产品数据，显示提示信�?                if (allProducts.length === 0) {
                     productsContainer.innerHTML = '<div class="no-products">暂无产品数据</div>';
                     allProductsLoaded = true;
                 } else {
-                    // 加载第一页产�?                    loadMoreProducts();
+                    // 加载第一页产�?                    loadMoreProducts();
                     
-                    // 添加滚动事件监听器，实现懒加�?                    window.addEventListener('scroll', handleScroll);
+                    // 添加滚动事件监听器，实现懒加�?                    window.addEventListener('scroll', handleScroll);
                 }
                 
-                // 标记为加载完�?                isLoading = false;
+                // 标记为加载完�?                isLoading = false;
             })
             .catch(error => {
                 console.error('Error fetching products:', error);
@@ -226,22 +235,22 @@
             });
     }
     
-    // 加载更多产品的函�?    function loadMoreProducts() {
+    // 加载更多产品的函�?    function loadMoreProducts() {
         if (isLoading || allProductsLoaded) return;
         
         isLoading = true;
         const productsContainer = document.getElementById('products-container');
         
-        // 计算当前页的起始和结束索�?        const startIndex = (currentPage - 1) * productsPerPage;
+        // 计算当前页的起始和结束索�?        const startIndex = (currentPage - 1) * productsPerPage;
         const endIndex = Math.min(startIndex + productsPerPage, allProducts.length);
         
-        // 如果已经加载了所有产品，则不再加�?        if (startIndex >= allProducts.length) {
+        // 如果已经加载了所有产品，则不再加�?        if (startIndex >= allProducts.length) {
             allProductsLoaded = true;
             isLoading = false;
             return;
         }
         
-        // 创建加载指示�?        const loadingIndicator = document.createElement('div');
+        // 创建加载指示�?        const loadingIndicator = document.createElement('div');
         loadingIndicator.className = 'loading-more-indicator';
         loadingIndicator.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 加载更多产品...';
         productsContainer.appendChild(loadingIndicator);
@@ -270,7 +279,7 @@
                     </a>
                 `;
                 
-                // 移除加载指示�?                if (loadingIndicator) {
+                // 移除加载指示�?                if (loadingIndicator) {
                     loadingIndicator.remove();
                 }
                 
@@ -280,18 +289,18 @@
             // 增加页码
             currentPage++;
             
-            // 检查是否已加载所有产�?            if (endIndex >= allProducts.length) {
+            // 检查是否已加载所有产�?            if (endIndex >= allProducts.length) {
                 allProductsLoaded = true;
-                // 可以添加一个提示，表示已加载所有产�?                const endMessage = document.createElement('div');
+                // 可以添加一个提示，表示已加载所有产�?                const endMessage = document.createElement('div');
                 endMessage.className = 'end-message';
-                endMessage.textContent = '已加载全部产�?;
+                endMessage.textContent = '已加载全部产�?;
                 productsContainer.appendChild(endMessage);
             }
             
             isLoading = false;
-        }, 300); // 300毫秒延迟，模拟网络请�?    }
+        }, 300); // 300毫秒延迟，模拟网络请�?    }
     
-    // 处理滚动事件的函�?     function handleScroll() {
+    // 处理滚动事件的函�?     function handleScroll() {
          // 如果正在加载或已加载所有产品，则不处理
          if (isLoading || allProductsLoaded) return;
          
