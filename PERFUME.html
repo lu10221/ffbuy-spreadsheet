@@ -1,52 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-DZ3110PTYG"></script>
-<script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-    gtag('config', 'G-DZ3110PTYG');
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZ3110PTYG"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-DZ3110PTYG');
 
-    // 🔽 自动获取并上报 utm_content 参数
-    const urlParams = new URLSearchParams(window.location.search);
-    const utmContent = urlParams.get('utm_content');
-    if (utmContent) {
-        gtag('event', 'utm_content_event', {
-            utm_content: utmContent
-        });
-    }
-</script>
+        // 🔽 自动获取并上报 utm_content 参数
+        const urlParams = new URLSearchParams(window.location.search);
+        const utmContent = urlParams.get('utm_content');
+        if (utmContent) {
+            gtag('event', 'utm_content_event', {
+                utm_content: utmContent
+            });
+        }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>$FFBuy SpreadSheet</title>
+    <title>PERFUME - $FFBuy SpreadSheet</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="global-search.css">    
     <script src="trust-info.js"></script>
     <script src="product-trust-info.js"></script>
-    <meta http-equiv="refresh" content="0;url=Shoes.html">
+    <link rel="stylesheet" href="product-detail-modal.css">
+    <script src="product-detail.js"></script>
+
 </head>
 <body>
     <div class="top-info-bar"> 
    <i class="fas fa-shield-alt"></i> 
    This page displays products only. Orders are securely processed via <strong style="color:#2476db; font-weight:600;">CNFANS Platform</strong> with buyer protection & after-sales support. 
  </div>
-    <div class="fixed-logo-bar">
-        <a href="index.html" class="logo">$FFBuy SpreadSheet</a>
-    </div>
     <header>
         <div class="header-top">
+            <a href="index.html" class="logo">$FFBuy SpreadSheet</a>
             <div class="nav-links">
                 <a href="HOT PRODUCTS.html"><i class="fas fa-fire"></i> HOT PRODUCTS</a>
                 <a href="T-Shirt.html"><i class="fas fa-tshirt"></i> T-Shirt</a>
                 <a href="Pants.html"><i class="fas fa-socks"></i> Pants</a>
-                <a href="Shoes.html" class="active"><i class="fas fa-shoe-prints"></i> Shoes</a>
+                <a href="Shoes.html"><i class="fas fa-shoe-prints"></i> Shoes</a>
                 <a href="Set.html"><i class="fas fa-layer-group"></i> Set</a>
                 <a href="Accessories.html"><i class="fas fa-gem"></i> Accessories</a>
                 <a href="Hoodie Sweatshirt.html"><i class="fas fa-tshirt"></i> Hoodie/Sweatshirt</a>
                 <a href="ELECTRONICOS.html"><i class="fas fa-laptop"></i> ELECTRONICOS</a>
-                <a href="PERFUME.html"><i class="fas fa-spray-can"></i> PERFUME</a>
+                <a href="PERFUME.html" class="active"><i class="fas fa-spray-can"></i> PERFUME</a>
             </div>
             <div class="mobile-menu-btn">
                 <i class="fas fa-bars"></i>
@@ -69,8 +70,9 @@
         <img src="img/cod.png" alt="Cash on Delivery" height="24" style="padding: 0 4px; vertical-align: middle;">
     </div>
 </div>
+
     <nav>
-        <a href="HOT PRODUCTS.html" class="active"><i class="fas fa-fire"></i> HOT PRODUCTS</a>
+        <a href="HOT PRODUCTS.html"><i class="fas fa-fire"></i> HOT PRODUCTS</a>
         <a href="T-Shirt.html"><i class="fas fa-tshirt"></i> T-Shirt</a>
         <a href="Pants.html"><i class="fas fa-socks"></i> Pants</a>
         <a href="Shoes.html"><i class="fas fa-shoe-prints"></i> Shoes</a>
@@ -78,7 +80,7 @@
         <a href="Accessories.html"><i class="fas fa-gem"></i> Accessories</a>
         <a href="Hoodie Sweatshirt.html"><i class="fas fa-tshirt"></i> Hoodie/Sweatshirt</a>
         <a href="ELECTRONICOS.html"><i class="fas fa-laptop"></i> ELECTRONICOS</a>
-        <a href="PERFUME.html"><i class="fas fa-spray-can"></i> PERFUME</a>
+        <a href="PERFUME.html" class="active"><i class="fas fa-spray-can"></i> PERFUME</a>
     </nav>
 
     <div class="container">
@@ -90,6 +92,21 @@
         </div>
     </div>
 
+<!-- 商品详情弹窗 -->
+<div class="product-detail-modal" id="productDetailModal">
+    <div class="product-detail-content">
+        <div class="product-detail-header">
+            <h2 class="product-detail-title">Product Details</h2>
+            <button class="product-detail-close" id="closeDetailModal">&times;</button>
+        </div>
+        <div class="product-detail-body" id="productDetailBody">
+            <div class="product-detail-loading">
+                <i class="fas fa-spinner fa-spin"></i> Loading product details...
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="floating-buttons" id="floatingButtons">
     <div class="float-btn toggle-btn" id="toggleFloatingBtn"><i class="fas fa-headset"></i></div>
     <div class="floating-content" id="floatingContent">
@@ -100,13 +117,16 @@
 </div>
 <div class="float-btn back-to-top"><i class="fas fa-arrow-up"></i></div>
 
+<!-- Include the centralized floating buttons script -->
 <script src="floating-buttons.js"></script>
-<script src="trust-info.js"></script>
+
 <script>
     // Document ready function
     document.addEventListener('DOMContentLoaded', function() {
         // Fetch products from JSON API
-        fetchHotProducts();
+        fetchProducts();
+        
+        // Note: WhatsApp icon functionality has been moved to floating-buttons.js for centralized management
         
         // Product filter functionality
         const searchBox = document.querySelector('.search-box');
@@ -166,25 +186,24 @@
             });
         }
         
+        // Note: Back to top button and Telegram icon functionality 
+        // has been moved to floating-buttons.js for centralized management
     });
     
-    // Global variables for lazy loading
+    // 全局变量，用于懒加载功能
     let allProducts = [];
     let currentPage = 1;
     const productsPerPage = 50;
     let isLoading = false;
     let allProductsLoaded = false;
     
-    // Function to fetch hot products from JSON API
-    function fetchHotProducts() {
+    // Function to fetch products from Google Sheets API
+    function fetchProducts() {
         const productsContainer = document.getElementById('products-container');
         const loadingIndicator = document.querySelector('.loading-indicator');
-        // 修复URL编码问题，将空格替换为%20
-        const category = 'HOT PRODUCTS';
-        const encodedCategory = category.replace(/ /g, '%20');
-        const apiUrl = 'https://opensheet.elk.sh/1hs4cXFLQRhdR8MfQ0vt0oMXhXplksGbU9vzkhO46J6A/' + encodedCategory;
+        const apiUrl = 'https://opensheet.elk.sh/1hs4cXFLQRhdR8MfQ0vt0oMXhXplksGbU9vzkhO46J6A/PERFUME';
         
-        // Create a separate loading indicator that doesn't block page interaction
+        // 创建一个单独的加载指示器，不会阻止页面交互
         if (!loadingIndicator) {
             const indicator = document.createElement('div');
             indicator.className = 'loading-indicator';
@@ -192,17 +211,17 @@
             productsContainer.appendChild(indicator);
         }
         
-        // Set timeout if API request takes too long
+        // 设置超时，如果API请求时间过长，显示部分UI
         const timeoutPromise = new Promise((_, reject) => {
             setTimeout(() => {
                 reject(new Error('Request timeout, please check your network connection'));
-            }, 10000); // 10 seconds timeout
+            }, 10000); // 10秒超时
         });
         
-        // Mark as loading
+        // 标记为正在加载
         isLoading = true;
         
-        // Use Promise.race to compete between timeout and normal request
+        // 使用Promise.race在超时和正常请求之间竞争
         Promise.race([fetch(apiUrl), timeoutPromise])
             .then(response => {
                 if (!response.ok) {
@@ -211,30 +230,30 @@
                 return response.json();
             })
             .then(data => {
-                // Remove loading indicator, keep other content
+                // 移除加载指示器，保留其他内容
                 const loadingIndicator = document.querySelector('.loading-indicator');
                 if (loadingIndicator) {
                     loadingIndicator.remove();
                 }
                 
-                // Save all product data
+                // 保存所有产品数据
                 allProducts = data.filter(product => product.spbt && product.ztURL && product.spURL);
                 // Make allProducts globally accessible for product detail functionality
                 window.allProducts = allProducts;
                 
-                // If there's no product data, show a message
+                // 如果没有产品数据，显示提示信息
                 if (allProducts.length === 0) {
                     productsContainer.innerHTML = '<div class="no-products">No products available</div>';
                     allProductsLoaded = true;
                 } else {
-                    // Load first page of products
+                    // 加载第一页产品
                     loadMoreProducts();
                     
-                    // Add scroll event listener for lazy loading
+                    // 添加滚动事件监听器，实现懒加载
                     window.addEventListener('scroll', handleScroll);
                 }
                 
-                // Mark as loading complete
+                // 标记为加载完成
                 isLoading = false;
             })
             .catch(error => {
@@ -244,33 +263,33 @@
             });
     }
     
-    // Function to load more products
+    // 加载更多产品的函数
     function loadMoreProducts() {
         if (isLoading || allProductsLoaded) return;
         
         isLoading = true;
         const productsContainer = document.getElementById('products-container');
         
-        // Calculate start and end index for current page
+        // 计算当前页的起始和结束索引
         const startIndex = (currentPage - 1) * productsPerPage;
         const endIndex = Math.min(startIndex + productsPerPage, allProducts.length);
         
-        // If all products are loaded, don't load more
+        // 如果已经加载了所有产品，则不再加载
         if (startIndex >= allProducts.length) {
             allProductsLoaded = true;
             isLoading = false;
             return;
         }
         
-        // Create loading indicator
+        // 创建加载指示器
         const loadingIndicator = document.createElement('div');
         loadingIndicator.className = 'loading-more-indicator';
         loadingIndicator.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading more products...';
         productsContainer.appendChild(loadingIndicator);
         
-        // Simulate network delay, can be removed in production
+        // 模拟网络延迟，实际使用时可以移除
         setTimeout(() => {
-            // Load current page products
+            // 加载当前页的产品
             for (let i = startIndex; i < endIndex; i++) {
                 const product = allProducts[i];
                 const productCard = document.createElement('div');
@@ -278,9 +297,36 @@
                 productCard.style.animationDelay = `${(i - startIndex) * 0.03}s`;
                 productCard.classList.add('fade-in');
                 
+                // 从URL中提取商品ID
+                let productID = '';
+                try {
+                    const url = new URL(product.spURL);
+                    const pathParts = url.pathname.split('/');
+                    // 尝试从URL路径中提取商品ID
+                    for (let i = 0; i < pathParts.length; i++) {
+                        if (pathParts[i] && !isNaN(pathParts[i])) {
+                            productID = pathParts[i];
+                            break;
+                        }
+                    }
+                    
+                    // 如果路径中没找到，尝试从查询参数中提取
+                    if (!productID) {
+                        productID = url.searchParams.get('itemID') || 
+                                   url.searchParams.get('id') || 
+                                   url.searchParams.get('productID') || '';
+                    }
+                } catch (e) {
+                    console.error('Error extracting product ID:', e);
+                }
+
+                // 存储商品ID到数据属性
+                productCard.dataset.productId = productID;
+                productCard.dataset.productUrl = product.spURL;
+
                 // Create product HTML
                 productCard.innerHTML = `
-                    <a href="${product.spURL}" target="_blank">
+                    <div class="product-card-inner">
                         <img src="${product.ztURL}" class="product-image" alt="${product.spbt}">
                         <div class="product-info">
                             <div class="product-title">${product.spbt}</div>
@@ -289,10 +335,24 @@
                                 <span class="eur-price">${product.EUR || '--'}</span>
                             </div>
                         </div>
-                    </a>
+                    </div>
                 `;
                 
-                // Remove loading indicator
+                // 添加点击事件，打开详情弹窗
+                productCard.addEventListener('click', function() {
+                    // 传递完整的产品信息到详情弹窗
+                    openProductDetail(this.dataset.productId, this.dataset.productUrl, product);
+                    // 记录商品点击事件到GA
+                    if(typeof gtag === 'function') {
+                        gtag('event', 'product_click', {
+                            'product_id': this.dataset.productId,
+                            'product_name': product.spbt,
+                            'product_category': 'PERFUME'
+                        });
+                    }
+                });
+                
+                // 移除加载指示器
                 if (loadingIndicator) {
                     loadingIndicator.remove();
                 }
@@ -300,13 +360,13 @@
                 productsContainer.appendChild(productCard);
             }
             
-            // Increase page number
+            // 增加页码
             currentPage++;
             
-            // Check if all products are loaded
+            // 检查是否已加载所有产品
             if (endIndex >= allProducts.length) {
                 allProductsLoaded = true;
-                // Add a message indicating all products are loaded
+                // 可以添加一个提示，表示已加载所有产品
                 const endMessage = document.createElement('div');
                 endMessage.className = 'end-message';
                 endMessage.textContent = 'All products loaded';
@@ -314,30 +374,28 @@
             }
             
             isLoading = false;
-        }, 300); // 300ms delay to simulate network request
+        }, 300); // 300毫秒延迟，模拟网络请求
     }
     
-    // Function to handle scroll events
+    // 处理滚动事件的函数
     function handleScroll() {
-        // If loading or all products loaded, don't process
+        // 如果正在加载或已加载所有产品，则不处理
         if (isLoading || allProductsLoaded) return;
         
-        // Calculate scroll position
+        // 计算滚动位置
         const scrollTop = window.scrollY || document.documentElement.scrollTop;
         const windowHeight = window.innerHeight;
         const documentHeight = document.documentElement.scrollHeight;
         
-        // When scrolled near the bottom of the page, load more products
+        // 当滚动到页面底部附近时，加载更多产品
         if (scrollTop + windowHeight >= documentHeight - 200) {
             loadMoreProducts();
         }
     }
     
-    // When page is loaded, call fetchHotProducts function to get product data
-    document.addEventListener('DOMContentLoaded', fetchHotProducts);
+    // 页面加载完成后，调用fetchProducts函数获取产品数据
+    document.addEventListener('DOMContentLoaded', fetchProducts);
 </script>
     <script src="global-search.js"></script>
 </body>
 </html>
-
-
