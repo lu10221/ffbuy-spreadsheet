@@ -968,11 +968,7 @@ nav a.active {
         color: #ff6347;
     }
 
-    /* 隐藏ELECTRONICOS菜单项 */
-    nav a[href="ELECTRONICOS.html"],
-    .nav-links a[href="ELECTRONICOS.html"] {
-        display: none !important;
-    }
+
 
     nav a:last-child {
         border-bottom: none;
