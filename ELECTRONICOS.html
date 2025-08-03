@@ -9,7 +9,7 @@
         gtag('js', new Date());
         gtag('config', 'G-DZ3110PTYG');
 
-        // 🔽 自动获取并上报 utm_content 参数
+        // 🔽 自动获取并上�?utm_content 参数
         const urlParams = new URLSearchParams(window.location.search);
         const utmContent = urlParams.get('utm_content');
         if (utmContent) {
@@ -48,9 +48,6 @@
                 <a href="Hoodie Sweatshirt.html"><i class="fas fa-tshirt"></i> Hoodie/Sweatshirt</a>
                 <a href="ELECTRONICOS.html" class="active"><i class="fas fa-laptop"></i> ELECTRONICOS</a>
                 <a href="PERFUME.html"><i class="fas fa-spray-can"></i> PERFUME</a>
-            </div>
-            <div class="mobile-menu-btn">
-                <i class="fas fa-bars"></i>
             </div>
         </div>
         <div class="header-bottom">
@@ -146,45 +143,7 @@
             });
         });
         
-        // Mobile menu functionality
-        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
-        const nav = document.querySelector('nav');
-        
-        if (mobileMenuBtn) {
-            mobileMenuBtn.addEventListener('click', function() {
-                nav.classList.toggle('active');
-                // Toggle icon between bars and times
-                const icon = this.querySelector('i');
-                if (icon.classList.contains('fa-bars')) {
-                    icon.classList.remove('fa-bars');
-                    icon.classList.add('fa-times');
-                } else {
-                    icon.classList.remove('fa-times');
-                    icon.classList.add('fa-bars');
-                }
-            });
-            
-            // Close menu when clicking outside
-            document.addEventListener('click', function(event) {
-                if (!nav.contains(event.target) && !mobileMenuBtn.contains(event.target) && nav.classList.contains('active')) {
-                    nav.classList.remove('active');
-                    const icon = mobileMenuBtn.querySelector('i');
-                    icon.classList.remove('fa-times');
-                    icon.classList.add('fa-bars');
-                }
-            });
-            
-            // Close menu when clicking on a nav link
-            const navLinks = document.querySelectorAll('nav a');
-            navLinks.forEach(link => {
-                link.addEventListener('click', function() {
-                    nav.classList.remove('active');
-                    const icon = mobileMenuBtn.querySelector('i');
-                    icon.classList.remove('fa-times');
-                    icon.classList.add('fa-bars');
-                });
-            });
-        }
+        // Mobile menu functionality removed - now using horizontal scrollable navigation
         
         // Note: Back to top button and Telegram icon functionality 
         // has been moved to floating-buttons.js for centralized management
@@ -215,10 +174,10 @@
         const timeoutPromise = new Promise((_, reject) => {
             setTimeout(() => {
                 reject(new Error('Request timeout, please check your network connection'));
-            }, 10000); // 10秒超时
+            }, 10000); // 10秒超�?
         });
         
-        // 标记为正在加载
+        // 标记为正在加�?
         isLoading = true;
         
         // 使用Promise.race在超时和正常请求之间竞争
@@ -236,24 +195,24 @@
                     loadingIndicator.remove();
                 }
                 
-                // 保存所有产品数据
+                // 保存所有产品数�?
                 allProducts = data.filter(product => product.spbt && product.ztURL && product.spURL);
                 // Make allProducts globally accessible for product detail functionality
                 window.allProducts = allProducts;
                 
-                // 如果没有产品数据，显示提示信息
+                // 如果没有产品数据，显示提示信�?
                 if (allProducts.length === 0) {
                     productsContainer.innerHTML = '<div class="no-products">No products available</div>';
                     allProductsLoaded = true;
                 } else {
-                    // 加载第一页产品
+                    // 加载第一页产�?
                     loadMoreProducts();
                     
-                    // 添加滚动事件监听器，实现懒加载
+                    // 添加滚动事件监听器，实现懒加�?
                     window.addEventListener('scroll', handleScroll);
                 }
                 
-                // 标记为加载完成
+                // 标记为加载完�?
                 isLoading = false;
             })
             .catch(error => {
@@ -263,25 +222,25 @@
             });
     }
     
-    // 加载更多产品的函数
+    // 加载更多产品的函�?
     function loadMoreProducts() {
         if (isLoading || allProductsLoaded) return;
         
         isLoading = true;
         const productsContainer = document.getElementById('products-container');
         
-        // 计算当前页的起始和结束索引
+        // 计算当前页的起始和结束索�?
         const startIndex = (currentPage - 1) * productsPerPage;
         const endIndex = Math.min(startIndex + productsPerPage, allProducts.length);
         
-        // 如果已经加载了所有产品，则不再加载
+        // 如果已经加载了所有产品，则不再加�?
         if (startIndex >= allProducts.length) {
             allProductsLoaded = true;
             isLoading = false;
             return;
         }
         
-        // 创建加载指示器
+        // 创建加载指示�?
         const loadingIndicator = document.createElement('div');
         loadingIndicator.className = 'loading-more-indicator';
         loadingIndicator.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading more products...';
@@ -310,7 +269,7 @@
                         }
                     }
                     
-                    // 如果路径中没找到，尝试从查询参数中提取
+                    // 如果路径中没找到，尝试从查询参数中提�?
                     if (!productID) {
                         productID = url.searchParams.get('itemID') || 
                                    url.searchParams.get('id') || 
@@ -320,7 +279,7 @@
                     console.error('Error extracting product ID:', e);
                 }
 
-                // 存储商品ID到数据属性
+                // 存储商品ID到数据属�?
                 productCard.dataset.productId = productID;
                 productCard.dataset.productUrl = product.spURL;
 
@@ -340,7 +299,7 @@
                 
                 // 添加点击事件，打开详情弹窗
                 productCard.addEventListener('click', function() {
-                    // 传递完整的产品信息到详情弹窗
+                    // 传递完整的产品信息到详情弹�?
                     openProductDetail(this.dataset.productId, this.dataset.productUrl, product);
                     // 记录商品点击事件到GA
                     if(typeof gtag === 'function') {
@@ -352,7 +311,7 @@
                     }
                 });
                 
-                // 移除加载指示器
+                // 移除加载指示�?
                 if (loadingIndicator) {
                     loadingIndicator.remove();
                 }
@@ -363,10 +322,10 @@
             // 增加页码
             currentPage++;
             
-            // 检查是否已加载所有产品
+            // 检查是否已加载所有产�?
             if (endIndex >= allProducts.length) {
                 allProductsLoaded = true;
-                // 可以添加一个提示，表示已加载所有产品
+                // 可以添加一个提示，表示已加载所有产�?
                 const endMessage = document.createElement('div');
                 endMessage.className = 'end-message';
                 endMessage.textContent = 'All products loaded';
@@ -374,10 +333,10 @@
             }
             
             isLoading = false;
-        }, 300); // 300毫秒延迟，模拟网络请求
+        }, 300); // 300毫秒延迟，模拟网络请�?
     }
     
-    // 处理滚动事件的函数
+    // 处理滚动事件的函�?
     function handleScroll() {
         // 如果正在加载或已加载所有产品，则不处理
         if (isLoading || allProductsLoaded) return;
@@ -396,6 +355,7 @@
     // 页面加载完成后，调用fetchProducts函数获取产品数据
     document.addEventListener('DOMContentLoaded', fetchProducts);
 </script>
+    <script src="category-navigation.js"></script>
     <script src="global-search.js"></script>
 </body>
 </html>

@@ -52,9 +52,6 @@
                 <a href="ELECTRONICOS.html"><i class="fas fa-laptop"></i> ELECTRONICOS</a>
                 <a href="PERFUME.html"><i class="fas fa-spray-can"></i> PERFUME</a>
             </div>
-            <div class="mobile-menu-btn">
-                <i class="fas fa-bars"></i>
-            </div>
         </div>
         <div class="header-bottom">
             <div class="search-container">
@@ -147,45 +144,7 @@
                 });
             });
 
-            // Mobile menu functionality
-            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
-            const nav = document.querySelector('nav');
-
-            if (mobileMenuBtn) {
-                mobileMenuBtn.addEventListener('click', function () {
-                    nav.classList.toggle('active');
-                    // Toggle icon between bars and times
-                    const icon = this.querySelector('i');
-                    if (icon.classList.contains('fa-bars')) {
-                        icon.classList.remove('fa-bars');
-                        icon.classList.add('fa-times');
-                    } else {
-                        icon.classList.remove('fa-times');
-                        icon.classList.add('fa-bars');
-                    }
-                });
-
-                // Close menu when clicking outside
-                document.addEventListener('click', function (event) {
-                    if (!nav.contains(event.target) && !mobileMenuBtn.contains(event.target) && nav.classList.contains('active')) {
-                        nav.classList.remove('active');
-                        const icon = mobileMenuBtn.querySelector('i');
-                        icon.classList.remove('fa-times');
-                        icon.classList.add('fa-bars');
-                    }
-                });
-
-                // Close menu when clicking on a nav link
-                const navLinks = document.querySelectorAll('nav a');
-                navLinks.forEach(link => {
-                    link.addEventListener('click', function () {
-                        nav.classList.remove('active');
-                        const icon = mobileMenuBtn.querySelector('i');
-                        icon.classList.remove('fa-times');
-                        icon.classList.add('fa-bars');
-                    });
-                });
-            }
+            // Mobile menu functionality removed - now using horizontal scrollable navigation
 
             // 浮动按钮功能已移至floating-buttons.js
         });
@@ -398,6 +357,7 @@
         // When page is loaded, call fetchProducts function to get product data
         document.addEventListener('DOMContentLoaded', fetchProducts);
     </script>
+    <script src="category-navigation.js"></script>
     <script src="global-search.js"></script>
 </body>
 

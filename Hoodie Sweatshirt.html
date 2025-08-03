@@ -9,7 +9,7 @@
         gtag('js', new Date());
         gtag('config', 'G-DZ3110PTYG');
 
-        // 🔽 自动获取并上报 utm_content 参数
+        // 🔽 自动获取并上�?utm_content 参数
         const urlParams = new URLSearchParams(window.location.search);
         const utmContent = urlParams.get('utm_content');
         if (utmContent) {
@@ -48,9 +48,6 @@
                 <a href="Hoodie Sweatshirt.html" class="active"><i class="fas fa-tshirt"></i> Hoodie/Sweatshirt</a>
                 <a href="ELECTRONICOS.html"><i class="fas fa-laptop"></i> ELECTRONICOS</a>
                 <a href="PERFUME.html"><i class="fas fa-spray-can"></i> PERFUME</a>
-            </div>
-            <div class="mobile-menu-btn">
-                <i class="fas fa-bars"></i>
             </div>
         </div>
         <div class="header-bottom">
@@ -146,45 +143,7 @@
             });
         });
         
-        // Mobile menu functionality
-        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
-        const nav = document.querySelector('nav');
-        
-        if (mobileMenuBtn) {
-            mobileMenuBtn.addEventListener('click', function() {
-                nav.classList.toggle('active');
-                // Toggle icon between bars and times
-                const icon = this.querySelector('i');
-                if (icon.classList.contains('fa-bars')) {
-                    icon.classList.remove('fa-bars');
-                    icon.classList.add('fa-times');
-                } else {
-                    icon.classList.remove('fa-times');
-                    icon.classList.add('fa-bars');
-                }
-            });
-            
-            // Close menu when clicking outside
-            document.addEventListener('click', function(event) {
-                if (!nav.contains(event.target) && !mobileMenuBtn.contains(event.target) && nav.classList.contains('active')) {
-                    nav.classList.remove('active');
-                    const icon = mobileMenuBtn.querySelector('i');
-                    icon.classList.remove('fa-times');
-                    icon.classList.add('fa-bars');
-                }
-            });
-            
-            // Close menu when clicking on a nav link
-            const navLinks = document.querySelectorAll('nav a');
-            navLinks.forEach(link => {
-                link.addEventListener('click', function() {
-                    nav.classList.remove('active');
-                    const icon = mobileMenuBtn.querySelector('i');
-                    icon.classList.remove('fa-times');
-                    icon.classList.add('fa-bars');
-                });
-            });
-        }
+        // Mobile menu functionality removed - now using horizontal scrollable navigation
         
         // Note: Back to top button and Telegram icon functionality 
         // has been moved to floating-buttons.js for centralized management
@@ -310,7 +269,7 @@
                         }
                     }
                     
-                    // 如果路径中没找到，尝试从查询参数中提取
+                    // 如果路径中没找到，尝试从查询参数中提�?
                     if (!productID) {
                         productID = url.searchParams.get('itemID') || 
                                    url.searchParams.get('id') || 
@@ -320,7 +279,7 @@
                     console.error('Error extracting product ID:', e);
                 }
 
-                // 存储商品ID到数据属性
+                // 存储商品ID到数据属�?
                 productCard.dataset.productId = productID;
                 productCard.dataset.productUrl = product.spURL;
 
@@ -340,7 +299,7 @@
                 
                 // 添加点击事件，打开详情弹窗
                 productCard.addEventListener('click', function() {
-                    // 传递完整的产品信息到详情弹窗
+                    // 传递完整的产品信息到详情弹�?
                     openProductDetail(this.dataset.productId, this.dataset.productUrl, product);
                     // 记录商品点击事件到GA
                     if(typeof gtag === 'function') {
@@ -396,6 +355,7 @@
      // Call fetchProducts function when the page is loaded
      document.addEventListener('DOMContentLoaded', fetchProducts);
 </script>
+    <script src="category-navigation.js"></script>
     <script src="global-search.js"></script>
 </body>
 </html>
