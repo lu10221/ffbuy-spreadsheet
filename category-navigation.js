@@ -18,6 +18,13 @@ let currentCategory = 'HOT PRODUCTS';
 let categoryProducts = {}; // 缓存各分类的产品数据
 let isLoadingCategory = false;
 
+// 懒加载相关变量
+let allCategoryProducts = []; // 当前分类的所有产品
+let currentPage = 1;
+const productsPerPage = 20;
+let allProductsLoaded = false;
+let isLoading = false;
+
 // 初始化分类导航
 function initCategoryNavigation() {
     // 检测当前页面的分类
@@ -110,6 +117,15 @@ function switchCategory(categoryName, endpoint, clickedLink) {
     if (isLoadingCategory) return;
     
     isLoadingCategory = true;
+    
+    // 移除之前的滚动事件监听器
+    window.removeEventListener('scroll', handleCategoryScroll);
+    
+    // 重置懒加载状态
+    allCategoryProducts = [];
+    currentPage = 1;
+    allProductsLoaded = false;
+    isLoading = false;
     
     // 保存当前滚动位置
     const currentScrollPosition = getCurrentScrollPosition();
@@ -266,24 +282,132 @@ function renderCategoryProducts(products, categoryName) {
         return;
     }
     
+    // 重置懒加载状态
+    allCategoryProducts = products;
+    currentPage = 1;
+    allProductsLoaded = false;
+    isLoading = false;
+    
     // 清空容器
     productsContainer.innerHTML = '';
     
-    // 渲染产品
-    products.forEach((product, index) => {
-        const productCard = createProductCard(product, index);
+    // 渲染第一页产品
+    renderProductPage();
+    
+    // 添加滚动事件监听器
+    window.removeEventListener('scroll', handleCategoryScroll);
+    window.addEventListener('scroll', handleCategoryScroll);
+}
+
+// 渲染产品页面
+function renderProductPage() {
+    const productsContainer = document.getElementById('products-container');
+    if (!productsContainer) return;
+    
+    const startIndex = (currentPage - 1) * productsPerPage;
+    const endIndex = Math.min(startIndex + productsPerPage, allCategoryProducts.length);
+    
+    // 渲染当前页产品
+    for (let i = startIndex; i < endIndex; i++) {
+        const product = allCategoryProducts[i];
+        const productCard = createProductCard(product, i);
         productsContainer.appendChild(productCard);
-    });
+    }
+    
+    // 检查是否加载完所有产品
+    if (endIndex >= allCategoryProducts.length) {
+        allProductsLoaded = true;
+        // 添加结束提示
+        const endMessage = document.createElement('div');
+        endMessage.className = 'end-message';
+        endMessage.textContent = 'All products loaded';
+        productsContainer.appendChild(endMessage);
+    }
     
     // 添加淡入动画
     setTimeout(() => {
-        const cards = productsContainer.querySelectorAll('.product-card');
+        const cards = productsContainer.querySelectorAll('.product-card:not(.fade-in)');
         cards.forEach((card, index) => {
             setTimeout(() => {
                 card.classList.add('fade-in');
             }, index * 50);
         });
     }, 100);
+    
+    currentPage++;
+}
+
+// 加载更多分类产品
+function loadMoreCategoryProducts() {
+    if (isLoading || allProductsLoaded) return;
+    
+    isLoading = true;
+    const productsContainer = document.getElementById('products-container');
+    
+    // 计算当前页的开始和结束索引
+    const startIndex = (currentPage - 1) * productsPerPage;
+    const endIndex = Math.min(startIndex + productsPerPage, allCategoryProducts.length);
+    
+    // 如果已经加载了所有产品，则不再加载
+    if (startIndex >= allCategoryProducts.length) {
+        allProductsLoaded = true;
+        isLoading = false;
+        return;
+    }
+    
+    // 创建加载指示器
+    const loadingIndicator = document.createElement('div');
+    loadingIndicator.className = 'loading-more-indicator';
+    loadingIndicator.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading more products...';
+    productsContainer.appendChild(loadingIndicator);
+    
+    // 模拟网络延迟
+    setTimeout(() => {
+        // 加载当前页的产品
+        for (let i = startIndex; i < endIndex; i++) {
+            const product = allCategoryProducts[i];
+            const productCard = createProductCard(product, i);
+            productCard.style.animationDelay = `${(i - startIndex) * 0.03}s`;
+            productCard.classList.add('fade-in');
+            productsContainer.appendChild(productCard);
+        }
+        
+        // 移除加载指示器
+        if (loadingIndicator) {
+            loadingIndicator.remove();
+        }
+        
+        // 增加页码
+        currentPage++;
+        
+        // 检查是否已加载所有产品
+        if (endIndex >= allCategoryProducts.length) {
+            allProductsLoaded = true;
+            // 添加一个提示，表示已加载所有产品
+            const endMessage = document.createElement('div');
+            endMessage.className = 'end-message';
+            endMessage.textContent = 'All products loaded';
+            productsContainer.appendChild(endMessage);
+        }
+        
+        isLoading = false;
+    }, 300); // 300ms延迟模拟网络请求
+}
+
+// 处理分类滚动事件
+function handleCategoryScroll() {
+    // 如果正在加载或已加载所有产品，则不处理
+    if (isLoading || allProductsLoaded) return;
+    
+    // 计算滚动位置
+    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+    const windowHeight = window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+    
+    // 当滚动到页面底部附近时，加载更多产品
+    if (scrollTop + windowHeight >= documentHeight - 200) {
+        loadMoreCategoryProducts();
+    }
 }
 
 // 创建产品卡片
@@ -482,6 +606,20 @@ document.addEventListener('DOMContentLoaded', function() {
         initCategoryNavigation();
     }, 100);
 });
+
+// 页面卸载时清理事件监听器
+window.addEventListener('beforeunload', function() {
+    window.removeEventListener('scroll', handleCategoryScroll);
+});
+
+// 清理函数，供外部调用
+function cleanupCategoryNavigation() {
+    window.removeEventListener('scroll', handleCategoryScroll);
+    allCategoryProducts = [];
+    currentPage = 1;
+    allProductsLoaded = false;
+    isLoading = false;
+}
 
 // 导出函数供其他脚本使用
 window.CategoryNavigation = {
