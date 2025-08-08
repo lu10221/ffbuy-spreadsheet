@@ -9,7 +9,7 @@
         gtag('js', new Date());
         gtag('config', 'G-DZ3110PTYG');
 
-        // 🔽 自动获取并上报 utm_content 参数
+        // 🔽 自动获取并上报utm_content 参数
         const urlParams = new URLSearchParams(window.location.search);
         const utmContent = urlParams.get('utm_content');
         if (utmContent) {
@@ -23,29 +23,29 @@
     <title>T-Shirt - $FFBuy SpreadSheet</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link rel="stylesheet" href="global-search.css">
+    <link rel="stylesheet" href="global-search.css">    
+    <link rel="stylesheet" href="product-detail-modal.css">
+    <script src="config.js"></script>
+    <script src="product-service.js"></script>
+    <script src="product-renderer.js"></script>
     <script src="trust-info.js"></script>
     <script src="product-trust-info.js"></script>
-    <link rel="stylesheet" href="product-detail-modal.css">
     <script src="product-detail.js"></script>
-
 </head>
-
 <body>
-    <div class="top-info-bar">
-        <i class="fas fa-shield-alt"></i>
-        This page displays products only. Orders are securely processed via <strong
-            style="color:#2476db; font-weight:600;">CNFANS Platform</strong> with buyer protection & after-sales
-        support.
-    </div>
+    <div class="top-info-bar"> 
+   <i class="fas fa-shield-alt"></i> 
+   This page displays products only. Orders are securely processed via <strong style="color:#2476db; font-weight:600;">CNFANS Platform</strong> with buyer protection & after-sales support. 
+ </div>
     <header>
         <div class="header-top">
             <a href="index.html" class="logo">$FFBuy SpreadSheet</a>
             <div class="nav-links">
-                <a href="HOT PRODUCTS.html"><i class="fas fa-fire"></i> HOT PRODUCTS</a>
+                <a href="HOTPRODUCTS.html"><i class="fas fa-fire"></i> HOTPRODUCTS</a>
                 <a href="T-Shirt.html" class="active"><i class="fas fa-tshirt"></i> T-Shirt</a>
                 <a href="Pants.html"><i class="fas fa-socks"></i> Pants</a>
                 <a href="Shoes.html"><i class="fas fa-shoe-prints"></i> Shoes</a>
+                <a href="CheapShoes.html"><i class="fas fa-tags"></i> CheapShoes</a>
                 <a href="Set.html"><i class="fas fa-layer-group"></i> Set</a>
                 <a href="Accessories.html"><i class="fas fa-gem"></i> Accessories</a>
                 <a href="Hoodie Sweatshirt.html"><i class="fas fa-tshirt"></i> Hoodie/Sweatshirt</a>
@@ -72,10 +72,11 @@
 </div>
 
     <nav>
-        <a href="HOT PRODUCTS.html"><i class="fas fa-fire"></i> HOT PRODUCTS</a>
+        <a href="HOTPRODUCTS.html"><i class="fas fa-fire"></i> HOTPRODUCTS</a>
         <a href="T-Shirt.html" class="active"><i class="fas fa-tshirt"></i> T-Shirt</a>
         <a href="Pants.html"><i class="fas fa-socks"></i> Pants</a>
         <a href="Shoes.html"><i class="fas fa-shoe-prints"></i> Shoes</a>
+        <a href="CheapShoes.html"><i class="fas fa-tags"></i> CheapShoes</a>
         <a href="Set.html"><i class="fas fa-layer-group"></i> Set</a>
         <a href="Accessories.html"><i class="fas fa-gem"></i> Accessories</a>
         <a href="Hoodie Sweatshirt.html"><i class="fas fa-tshirt"></i> Hoodie/Sweatshirt</a>
@@ -86,9 +87,6 @@
     <div class="container">
         <div class="products-grid" id="products-container">
             <!-- Products will be loaded dynamically from JSON data -->
-            <div class="loading-indicator">
-                <i class="fas fa-spinner fa-spin"></i> Loading products...
-            </div>
         </div>
     </div>
 
@@ -119,13 +117,10 @@
 
     <script src="floating-buttons.js"></script>
     <script>
-        // Document ready function
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             // Fetch products from JSON API
             fetchProducts();
-
-            // WhatsApp图标功能已移至floating-buttons.js
-
+            
             // Product filter functionality
             const searchBox = document.querySelector('.search-box');
 
@@ -134,225 +129,41 @@
                 const productCards = document.querySelectorAll('.product-card');
 
                 productCards.forEach(card => {
-                    const title = card.querySelector('.product-title').textContent.toLowerCase();
-
-                    if (title.includes(searchTerm)) {
-                        card.style.display = 'block';
-                    } else {
-                        card.style.display = 'none';
+                    const title = card.querySelector('.product-title');
+                    if (title) {
+                        const titleText = title.textContent.toLowerCase();
+                        if (titleText.includes(searchTerm)) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
                     }
                 });
             });
-
-            // Mobile menu functionality removed - now using horizontal scrollable navigation
-
-            // 浮动按钮功能已移至floating-buttons.js
         });
 
-        // Global variables for lazy loading
-        let allProducts = [];
-        let currentPage = 1;
-        const productsPerPage = 50;
-        let isLoading = false;
-        let allProductsLoaded = false;
-
-        // Function to fetch products from JSON API
-        function fetchProducts() {
-            const productsContainer = document.getElementById('products-container');
-            const loadingIndicator = document.querySelector('.loading-indicator');
-            const apiUrl = 'https://opensheet.elk.sh/1hs4cXFLQRhdR8MfQ0vt0oMXhXplksGbU9vzkhO46J6A/T-Shirt';
-
-            // Create a separate loading indicator that doesn't block page interaction
-            if (!loadingIndicator) {
-                const indicator = document.createElement('div');
-                indicator.className = 'loading-indicator';
-                indicator.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading products...';
-                productsContainer.appendChild(indicator);
-            }
-
-            // Set timeout if API request takes too long
-            const timeoutPromise = new Promise((_, reject) => {
-                setTimeout(() => {
-                    reject(new Error('Request timeout, please check your network connection'));
-                }, 10000); // 10 seconds timeout
-            });
-
-            // Mark as loading
-            isLoading = true;
-
-            // Use Promise.race to compete between timeout and normal request
-            Promise.race([fetch(apiUrl), timeoutPromise])
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    // Remove loading indicator, keep other content
-                    const loadingIndicator = document.querySelector('.loading-indicator');
-                    if (loadingIndicator) {
-                        loadingIndicator.remove();
-                    }
-
-                    // Save all product data
-                    allProducts = data.filter(product => product.spbt && product.ztURL && product.spURL);
-                    // Make allProducts globally accessible for product detail functionality
-                    window.allProducts = allProducts;
-
-                    // If there's no product data, show a message
-                    if (allProducts.length === 0) {
-                        productsContainer.innerHTML = '<div class="no-products">No products available</div>';
-                        allProductsLoaded = true;
-                    } else {
-                        // Load first page of products
-                        loadMoreProducts();
-
-                        // Add scroll event listener for lazy loading
-                        window.addEventListener('scroll', handleScroll);
-                    }
-
-                    // Mark as loading complete
-                    isLoading = false;
-                })
-                .catch(error => {
-                    console.error('Error fetching products:', error);
-                    productsContainer.innerHTML = `<div class="error-message">Failed to load products: ${error.message}</div>`;
-                    isLoading = false;
-                });
-        }
-
-        // Function to load more products
-        function loadMoreProducts() {
-            if (isLoading || allProductsLoaded) return;
-
-            isLoading = true;
-            const productsContainer = document.getElementById('products-container');
-
-            // Calculate start and end index for current page
-            const startIndex = (currentPage - 1) * productsPerPage;
-            const endIndex = Math.min(startIndex + productsPerPage, allProducts.length);
-
-            // If all products are loaded, don't load more
-            if (startIndex >= allProducts.length) {
-                allProductsLoaded = true;
-                isLoading = false;
-                return;
-            }
-
-            // Create loading indicator
-            const loadingIndicator = document.createElement('div');
-            loadingIndicator.className = 'loading-more-indicator';
-            loadingIndicator.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading more products...';
-            productsContainer.appendChild(loadingIndicator);
-
-            // Simulate network delay, can be removed in production
-            setTimeout(() => {
-                // Load current page products
-                for (let i = startIndex; i < endIndex; i++) {
-                    const product = allProducts[i];
-                    const productCard = document.createElement('div');
-                    productCard.className = 'product-card';
-                    productCard.style.animationDelay = `${(i - startIndex) * 0.03}s`;
-                    productCard.classList.add('fade-in');
-
-                    // 从URL中提取商品ID
-                    let productID = '';
-                    try {
-                        const url = new URL(product.spURL);
-                        const pathParts = url.pathname.split('/');
-                        // 尝试从URL路径中提取商品ID
-                        for (let i = 0; i < pathParts.length; i++) {
-                            if (pathParts[i] && !isNaN(pathParts[i])) {
-                                productID = pathParts[i];
-                                break;
-                            }
-                        }
-                        
-                        // 如果路径中没找到，尝试从查询参数中提取
-                        if (!productID) {
-                            productID = url.searchParams.get('itemID') || 
-                                       url.searchParams.get('id') || 
-                                       url.searchParams.get('productID') || '';
-                        }
-                    } catch (e) {
-                        console.error('Error extracting product ID:', e);
-                    }
-
-                    // 存储商品ID到数据属性
-                    productCard.dataset.productId = productID;
-                    productCard.dataset.productUrl = product.spURL;
-
-                    // Create product HTML
-                    productCard.innerHTML = `
-                    <div class="product-card-inner">
-                        <img src="${product.ztURL}" class="product-image" alt="${product.spbt}">
-                        <div class="product-info">
-                            <div class="product-title">${product.spbt}</div>
-                            <div class="product-price">
-                                <span class="us-price">${product.US || '--'}</span>
-                                <span class="eur-price">${product.EUR || '--'}</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-
-                    // 添加点击事件，打开详情弹窗
-                    productCard.addEventListener('click', function() {
-                        // 传递完整的产品信息到详情弹窗
-                        openProductDetail(this.dataset.productId, this.dataset.productUrl, product);
-                        // 记录商品点击事件到GA
-                        if(typeof gtag === 'function') {
-                            gtag('event', 'product_click', {
-                                'product_id': this.dataset.productId,
-                                'product_name': product.spbt,
-                                'product_category': 'T-Shirt'
-                            });
-                        }
-                    });
-
-                    // Remove loading indicator
-                    if (loadingIndicator) {
-                        loadingIndicator.remove();
-                    }
-
-                    productsContainer.appendChild(productCard);
+        // 使用新的产品渲染器架构
+        async function fetchProducts() {
+            try {
+                // 初始化产品渲染器
+                if (!productRenderer.init('products-container')) {
+                    console.error('Failed to initialize product renderer');
+                    return;
                 }
-
-                // Increase page number
-                currentPage++;
-
-                // Check if all products are loaded
-                if (endIndex >= allProducts.length) {
-                    allProductsLoaded = true;
-                    // Add a message indicating all products are loaded
-                    const endMessage = document.createElement('div');
-                    endMessage.className = 'end-message';
-                    endMessage.textContent = 'All products loaded';
-                    productsContainer.appendChild(endMessage);
+                
+                // 加载T-Shirt数据
+                await productRenderer.loadProducts('T-Shirt');
+                
+            } catch (error) {
+                console.error('Error in fetchProducts:', error);
+                const productsContainer = document.getElementById('products-container');
+                if (productsContainer) {
+                    productsContainer.innerHTML = `<div class="error-message">${error.message}</div>`;
                 }
-
-                isLoading = false;
-            }, 300); // 300ms delay to simulate network request
-        }
-
-        // Function to handle scroll events
-        function handleScroll() {
-            // If loading or all products loaded, don't process
-            if (isLoading || allProductsLoaded) return;
-
-            // Calculate scroll position
-            const scrollTop = window.scrollY || document.documentElement.scrollTop;
-            const windowHeight = window.innerHeight;
-            const documentHeight = document.documentElement.scrollHeight;
-
-            // When scrolled near the bottom of the page, load more products
-            if (scrollTop + windowHeight >= documentHeight - 200) {
-                loadMoreProducts();
             }
         }
-
-        // Product detail functionality has been moved to product-detail.js
+        // 旧的产品加载和滚动处理逻辑已移除
+        // 现在使用统一的 product-service.js 和 product-renderer.js 模块
 
         // When page is loaded, call fetchProducts function to get product data
         document.addEventListener('DOMContentLoaded', fetchProducts);
@@ -360,5 +171,4 @@
     <script src="category-navigation.js"></script>
     <script src="global-search.js"></script>
 </body>
-
 </html>

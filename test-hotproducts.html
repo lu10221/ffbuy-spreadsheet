@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test HOTPRODUCTS</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Test HOTPRODUCTS Page</h1>
+        <div id="debug-info" style="background: #f0f0f0; padding: 10px; margin: 10px 0; border: 1px solid #ccc;">
+            <h3>Debug Information:</h3>
+            <div id="debug-content">Loading...</div>
+        </div>
+        <div class="products-grid" id="products-container">
+            <!-- Products will be loaded here -->
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="product-service.js"></script>
+    <script src="product-renderer.js"></script>
+    <script>
+        function updateDebugInfo(message) {
+            const debugContent = document.getElementById('debug-content');
+            if (debugContent) {
+                debugContent.innerHTML += '<br>' + message;
+            }
+            console.log(message);
+        }
+        
+        // 等待所有脚本加载完成
+        window.addEventListener('load', function() {
+            updateDebugInfo('Window loaded event triggered');
+            
+            // 检查依赖
+            updateDebugInfo('CONFIG: ' + (typeof CONFIG !== 'undefined' ? 'loaded' : 'missing'));
+            updateDebugInfo('productService: ' + (typeof productService !== 'undefined' ? 'loaded' : 'missing'));
+            updateDebugInfo('productRenderer: ' + (typeof productRenderer !== 'undefined' ? 'loaded' : 'missing'));
+            
+            if (typeof CONFIG !== 'undefined') {
+                updateDebugInfo('CONFIG.categories length: ' + (CONFIG.categories ? CONFIG.categories.length : 'undefined'));
+                updateDebugInfo('API Base URL: ' + CONFIG.API.BASE_URL);
+            }
+            
+            // 延迟执行测试，确保所有脚本都已加载
+            setTimeout(testProductLoad, 1000);
+        });
+        
+        async function testProductLoad() {
+            updateDebugInfo('Starting product load test...');
+            
+            try {
+                if (typeof productRenderer === 'undefined') {
+                    updateDebugInfo('ERROR: productRenderer is not available');
+                    return;
+                }
+                
+                if (typeof productService === 'undefined') {
+                    updateDebugInfo('ERROR: productService is not available');
+                    return;
+                }
+                
+                // 初始化渲染器
+                const initResult = productRenderer.init('products-container');
+                updateDebugInfo('Renderer init result: ' + initResult);
+                
+                if (!initResult) {
+                    updateDebugInfo('ERROR: Failed to initialize renderer');
+                    return;
+                }
+                
+                // 直接测试API调用
+                updateDebugInfo('Testing direct API call...');
+                const testData = await productService.fetchProducts('HOTPRODUCTS');
+                updateDebugInfo('API test result: ' + (testData ? testData.length + ' products' : 'failed'));
+                
+                // 加载产品
+                updateDebugInfo('Loading HOTPRODUCTS via renderer...');
+                await productRenderer.loadProducts('HOTPRODUCTS');
+                updateDebugInfo('Product loading completed successfully!');
+                
+            } catch (error) {
+                updateDebugInfo('ERROR: ' + error.message);
+                updateDebugInfo('Error stack: ' + error.stack);
+                document.getElementById('products-container').innerHTML = 
+                    `<div style="color: red; padding: 20px;">Error: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>

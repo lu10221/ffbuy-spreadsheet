@@ -1,61 +1,89 @@
 // 分类导航优化脚本 - 防止滑块刷新
 
-// 分类配置
-const categories = [
-    { name: 'HOT PRODUCTS', endpoint: 'HOT PRODUCTS', icon: 'fas fa-fire' },
-    { name: 'T-Shirt', endpoint: 'T-Shirt', icon: 'fas fa-tshirt' },
-    { name: 'Pants', endpoint: 'Pants', icon: 'fas fa-socks' },
-    { name: 'Shoes', endpoint: 'Shoes', icon: 'fas fa-shoe-prints' },
-    { name: 'Set', endpoint: 'Set', icon: 'fas fa-layer-group' },
-    { name: 'Accessories', endpoint: 'Accessories', icon: 'fas fa-gem' },
-    { name: 'Hoodie Sweatshirt', endpoint: 'Hoodie.Sweatshirt', icon: 'fas fa-tshirt' },
-    { name: 'ELECTRONICOS', endpoint: 'ELECTRONICOS', icon: 'fas fa-laptop' },
-    { name: 'PERFUME', endpoint: 'PERFUME', icon: 'fas fa-spray-can' }
-];
+// 分类配置 - 使用全局CONFIG
+function getCategories() {
+    // 如果CONFIG已加载，使用CONFIG中的分类配置
+    if (typeof CONFIG !== 'undefined' && CONFIG.categories) {
+        return CONFIG.categories;
+    }
+    
+    // 后备分类配置
+    return [
+        { name: 'HOTPRODUCTS', endpoint: 'HOTPRODUCTS', icon: 'fas fa-fire' },
+        { name: 'T-Shirt', endpoint: 'T-Shirt', icon: 'fas fa-tshirt' },
+        { name: 'Pants', endpoint: 'Pants', icon: 'fas fa-socks' },
+        { name: 'Shoes', endpoint: 'Shoes', icon: 'fas fa-shoe-prints' },
+        { name: 'CheapShoes', endpoint: 'CheapShoes', icon: 'fas fa-tags' },
+        { name: 'Set', endpoint: 'Set', icon: 'fas fa-layer-group' },
+        { name: 'Accessories', endpoint: 'Accessories', icon: 'fas fa-gem' },
+        { name: 'Hoodie Sweatshirt', endpoint: 'Hoodie.Sweatshirt', icon: 'fas fa-tshirt' },
+        { name: 'ELECTRONICOS', endpoint: 'ELECTRONICOS', icon: 'fas fa-laptop' },
+        { name: 'PERFUME', endpoint: 'PERFUME', icon: 'fas fa-spray-can' }
+    ];
+}
 
-// 当前分类状态
-let currentCategory = 'HOT PRODUCTS';
-let categoryProducts = {}; // 缓存各分类的产品数据
-let isLoadingCategory = false;
+const categories = getCategories();
 
-// 懒加载相关变量
-let allCategoryProducts = []; // 当前分类的所有产品
-let currentPage = 1;
-const productsPerPage = 20;
-let allProductsLoaded = false;
-let isLoading = false;
+// 分类导航命名空间，避免变量冲突
+const CategoryNav = {
+    currentCategory: 'HOTPRODUCTS',
+    categoryProducts: {}, // 缓存各分类的产品数据
+    isLoadingCategory: false,
+    // 懒加载相关变量
+    allCategoryProducts: [], // 当前分类的所有产品
+    currentPage: 1,
+    productsPerPage: 20,
+    allProductsLoaded: false,
+    isLoading: false
+};
 
 // 初始化分类导航
 function initCategoryNavigation() {
     // 检测当前页面的分类
     detectCurrentCategory();
     
-    // 转换导航链接为按钮
-    convertNavigationToButtons();
+    // 检查是否在专门的分类页面（如CheapShoes.html）
+    const currentPath = window.location.pathname;
+    const fileName = currentPath.split('/').pop();
+    const isSpecificCategoryPage = categories.some(cat => 
+        fileName === `${cat.name}.html` || fileName === `${cat.endpoint}.html`
+    );
     
-    // 设置导航点击事件
-    setupNavigationEvents();
-    
-    // 保存滚动位置
-    saveScrollPosition();
+    // 如果不在专门的分类页面，才启用动态导航功能
+    if (!isSpecificCategoryPage) {
+        // 转换导航链接为按钮
+        convertNavigationToButtons();
+        
+        // 设置导航点击事件
+        setupNavigationEvents();
+        
+        // 保存滚动位置
+        saveScrollPosition();
+    } else {
+        // 在专门页面只更新导航状态，不干扰原有功能
+        updateNavigationStateForCurrentPage();
+    }
 }
 
 // 检测当前页面分类
 function detectCurrentCategory() {
     const currentPath = window.location.pathname;
-    const fileName = currentPath.split('/').pop().replace('.html', '');
+    let fileName = currentPath.split('/').pop().replace('.html', '');
     
-    // 根据文件名确定当前分类
-    const category = categories.find(cat => 
-        cat.name.replace(/[\s\/]/g, ' ').trim() === fileName.replace(/[\s\/]/g, ' ').trim() ||
-        cat.endpoint.replace(/[\s\/]/g, '.') === fileName.replace(/[\s\/]/g, '.')
-    );
+    // 解码URL编码的文件名（如HOT%20PRODUCTS -> HOT PRODUCTS）
+    fileName = decodeURIComponent(fileName);
+    
+    // 根据文件名确定当前分类 - 使用精确匹配
+    const category = categories.find(cat => {
+        // 精确匹配文件名，避免CheapShoes被误认为Shoes
+        return cat.name === fileName || cat.endpoint === fileName;
+    });
     
     if (category) {
-        currentCategory = category.name;
+        CategoryNav.currentCategory = category.name;
     }
     
-    console.log('当前分类:', currentCategory);
+    console.log('当前分类:', CategoryNav.currentCategory, '文件名:', fileName);
 }
 
 // 转换导航链接为按钮
@@ -67,11 +95,13 @@ function convertNavigationToButtons() {
         const href = link.getAttribute('href');
         const categoryName = href.replace('.html', '').replace(/[\s\/]/g, ' ').trim();
         
-        // 找到对应的分类配置
-        const category = categories.find(cat => 
-            cat.name.replace(/[\s\/]/g, ' ').trim() === categoryName ||
-            href.includes(cat.name.replace(/[\s\/]/g, ' '))
-        );
+        // 找到对应的分类配置 - 使用精确匹配避免CheapShoes被误认为Shoes
+        const category = categories.find(cat => {
+            const catName = cat.name.replace(/[\s\/]/g, ' ').trim();
+            const fileName = href.replace('.html', '');
+            // 精确匹配文件名，避免部分匹配导致的错误
+            return catName === categoryName || cat.name === fileName || cat.endpoint === fileName;
+        });
         
         if (category) {
             // 移除原有的href，防止页面跳转
@@ -85,7 +115,7 @@ function convertNavigationToButtons() {
             link.style.cursor = 'pointer';
             
             // 设置当前活动状态
-            if (category.name === currentCategory) {
+            if (category.name === CategoryNav.currentCategory) {
                 link.classList.add('active');
             } else {
                 link.classList.remove('active');
@@ -105,7 +135,7 @@ function setupNavigationEvents() {
             const categoryName = this.getAttribute('data-category');
             const endpoint = this.getAttribute('data-endpoint');
             
-            if (categoryName !== currentCategory && !isLoadingCategory) {
+            if (categoryName !== CategoryNav.currentCategory && !CategoryNav.isLoadingCategory) {
                 switchCategory(categoryName, endpoint, this);
             }
         });
@@ -114,18 +144,18 @@ function setupNavigationEvents() {
 
 // 切换分类
 function switchCategory(categoryName, endpoint, clickedLink) {
-    if (isLoadingCategory) return;
+    if (CategoryNav.isLoadingCategory) return;
     
-    isLoadingCategory = true;
+    CategoryNav.isLoadingCategory = true;
     
     // 移除之前的滚动事件监听器
     window.removeEventListener('scroll', handleCategoryScroll);
     
     // 重置懒加载状态
-    allCategoryProducts = [];
-    currentPage = 1;
-    allProductsLoaded = false;
-    isLoading = false;
+    CategoryNav.allCategoryProducts = [];
+    CategoryNav.currentPage = 1;
+    CategoryNav.allProductsLoaded = false;
+    CategoryNav.isLoading = false;
     
     // 保存当前滚动位置
     const currentScrollPosition = getCurrentScrollPosition();
@@ -146,7 +176,7 @@ function switchCategory(categoryName, endpoint, clickedLink) {
             restoreScrollPosition(currentScrollPosition);
             
             // 更新当前分类
-            currentCategory = categoryName;
+            CategoryNav.currentCategory = categoryName;
             
             // 更新页面标题
             updatePageTitle(categoryName);
@@ -154,12 +184,12 @@ function switchCategory(categoryName, endpoint, clickedLink) {
             // 更新URL（不刷新页面）
             updateURL(categoryName);
             
-            isLoadingCategory = false;
+            CategoryNav.isLoadingCategory = false;
         })
         .catch(error => {
             console.error('加载分类失败:', error);
             showCategoryError(error.message);
-            isLoadingCategory = false;
+            CategoryNav.isLoadingCategory = false;
         });
 }
 
@@ -212,6 +242,21 @@ function updateNavigationState(activeLink) {
     activeLink.classList.add('active');
 }
 
+// 为专门页面更新导航状态
+function updateNavigationStateForCurrentPage() {
+    const navLinks = document.querySelectorAll('nav a');
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        const href = link.getAttribute('href');
+        if (href) {
+            const linkCategory = href.replace('.html', '');
+            if (linkCategory === CategoryNav.currentCategory) {
+                link.classList.add('active');
+            }
+        }
+    });
+}
+
 // 显示分类加载状态
 function showCategoryLoading() {
     const productsContainer = document.getElementById('products-container');
@@ -240,8 +285,8 @@ function showCategoryError(message) {
 // 加载分类产品
 function loadCategoryProducts(categoryName, endpoint) {
     // 检查缓存
-    if (categoryProducts[categoryName]) {
-        return Promise.resolve(categoryProducts[categoryName]);
+    if (CategoryNav.categoryProducts[categoryName]) {
+        return Promise.resolve(CategoryNav.categoryProducts[categoryName]);
     }
     
     // 构建API URL
@@ -263,7 +308,7 @@ function loadCategoryProducts(categoryName, endpoint) {
         })
         .then(data => {
             // 缓存数据
-            categoryProducts[categoryName] = data;
+            CategoryNav.categoryProducts[categoryName] = data;
             return data;
         });
 }
@@ -283,10 +328,10 @@ function renderCategoryProducts(products, categoryName) {
     }
     
     // 重置懒加载状态
-    allCategoryProducts = products;
-    currentPage = 1;
-    allProductsLoaded = false;
-    isLoading = false;
+    CategoryNav.allCategoryProducts = products;
+    CategoryNav.currentPage = 1;
+    CategoryNav.allProductsLoaded = false;
+    CategoryNav.isLoading = false;
     
     // 清空容器
     productsContainer.innerHTML = '';
@@ -304,19 +349,19 @@ function renderProductPage() {
     const productsContainer = document.getElementById('products-container');
     if (!productsContainer) return;
     
-    const startIndex = (currentPage - 1) * productsPerPage;
-    const endIndex = Math.min(startIndex + productsPerPage, allCategoryProducts.length);
+    const startIndex = (CategoryNav.currentPage - 1) * CategoryNav.productsPerPage;
+    const endIndex = Math.min(startIndex + CategoryNav.productsPerPage, CategoryNav.allCategoryProducts.length);
     
     // 渲染当前页产品
     for (let i = startIndex; i < endIndex; i++) {
-        const product = allCategoryProducts[i];
+        const product = CategoryNav.allCategoryProducts[i];
         const productCard = createProductCard(product, i);
         productsContainer.appendChild(productCard);
     }
     
     // 检查是否加载完所有产品
-    if (endIndex >= allCategoryProducts.length) {
-        allProductsLoaded = true;
+    if (endIndex >= CategoryNav.allCategoryProducts.length) {
+        CategoryNav.allProductsLoaded = true;
         // 添加结束提示
         const endMessage = document.createElement('div');
         endMessage.className = 'end-message';
@@ -334,24 +379,24 @@ function renderProductPage() {
         });
     }, 100);
     
-    currentPage++;
+    CategoryNav.currentPage++;
 }
 
 // 加载更多分类产品
 function loadMoreCategoryProducts() {
-    if (isLoading || allProductsLoaded) return;
+    if (CategoryNav.isLoading || CategoryNav.allProductsLoaded) return;
     
-    isLoading = true;
+    CategoryNav.isLoading = true;
     const productsContainer = document.getElementById('products-container');
     
     // 计算当前页的开始和结束索引
-    const startIndex = (currentPage - 1) * productsPerPage;
-    const endIndex = Math.min(startIndex + productsPerPage, allCategoryProducts.length);
+    const startIndex = (CategoryNav.currentPage - 1) * CategoryNav.productsPerPage;
+    const endIndex = Math.min(startIndex + CategoryNav.productsPerPage, CategoryNav.allCategoryProducts.length);
     
     // 如果已经加载了所有产品，则不再加载
-    if (startIndex >= allCategoryProducts.length) {
-        allProductsLoaded = true;
-        isLoading = false;
+    if (startIndex >= CategoryNav.allCategoryProducts.length) {
+        CategoryNav.allProductsLoaded = true;
+        CategoryNav.isLoading = false;
         return;
     }
     
@@ -365,7 +410,7 @@ function loadMoreCategoryProducts() {
     setTimeout(() => {
         // 加载当前页的产品
         for (let i = startIndex; i < endIndex; i++) {
-            const product = allCategoryProducts[i];
+            const product = CategoryNav.allCategoryProducts[i];
             const productCard = createProductCard(product, i);
             productCard.style.animationDelay = `${(i - startIndex) * 0.03}s`;
             productCard.classList.add('fade-in');
@@ -378,11 +423,11 @@ function loadMoreCategoryProducts() {
         }
         
         // 增加页码
-        currentPage++;
+        CategoryNav.currentPage++;
         
         // 检查是否已加载所有产品
-        if (endIndex >= allCategoryProducts.length) {
-            allProductsLoaded = true;
+        if (endIndex >= CategoryNav.allCategoryProducts.length) {
+            CategoryNav.allProductsLoaded = true;
             // 添加一个提示，表示已加载所有产品
             const endMessage = document.createElement('div');
             endMessage.className = 'end-message';
@@ -390,14 +435,14 @@ function loadMoreCategoryProducts() {
             productsContainer.appendChild(endMessage);
         }
         
-        isLoading = false;
+        CategoryNav.isLoading = false;
     }, 300); // 300ms延迟模拟网络请求
 }
 
 // 处理分类滚动事件
 function handleCategoryScroll() {
     // 如果正在加载或已加载所有产品，则不处理
-    if (isLoading || allProductsLoaded) return;
+    if (CategoryNav.isLoading || CategoryNav.allProductsLoaded) return;
     
     // 计算滚动位置
     const scrollTop = window.scrollY || document.documentElement.scrollTop;
@@ -615,16 +660,16 @@ window.addEventListener('beforeunload', function() {
 // 清理函数，供外部调用
 function cleanupCategoryNavigation() {
     window.removeEventListener('scroll', handleCategoryScroll);
-    allCategoryProducts = [];
-    currentPage = 1;
-    allProductsLoaded = false;
-    isLoading = false;
+    CategoryNav.allCategoryProducts = [];
+    CategoryNav.currentPage = 1;
+    CategoryNav.allProductsLoaded = false;
+    CategoryNav.isLoading = false;
 }
 
 // 导出函数供其他脚本使用
 window.CategoryNavigation = {
     switchCategory,
-    getCurrentCategory: () => currentCategory,
-    clearCache: () => { categoryProducts = {}; },
+    getCurrentCategory: () => CategoryNav.currentCategory,
+    clearCache: () => { CategoryNav.categoryProducts = {}; },
     getCategories: () => categories
 };

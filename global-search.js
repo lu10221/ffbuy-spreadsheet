@@ -1,15 +1,28 @@
 // Global search functionality for FFBuy SpreadSheet
 
-// Define all available product categories and their API endpoints
-const productCategories = [
-    { name: 'HOT PRODUCTS', endpoint: 'HOT PRODUCTS' },
-    { name: 'T-Shirt', endpoint: 'T-Shirt' },
-    { name: 'Pants', endpoint: 'Pants' },
-    { name: 'Shoes', endpoint: 'Shoes' },
-    { name: 'Set', endpoint: 'Set' },
-    { name: 'Accessories', endpoint: 'Accessories' },
-    { name: 'Hoodie Sweatshirt', endpoint: 'Hoodie.Sweatshirt' }
-];
+// 获取分类配置 - 使用全局CONFIG
+function getSearchCategories() {
+    // 如果CONFIG已加载，使用CONFIG中的分类配置
+    if (typeof CONFIG !== 'undefined' && CONFIG.categories) {
+        return CONFIG.categories.map(cat => ({
+            name: cat.name,
+            endpoint: cat.endpoint
+        }));
+    }
+    
+    // 后备分类配置
+    return [
+        { name: 'HOTPRODUCTS', endpoint: 'HOTPRODUCTS' },
+        { name: 'T-Shirt', endpoint: 'T-Shirt' },
+        { name: 'Pants', endpoint: 'Pants' },
+        { name: 'Shoes', endpoint: 'Shoes' },
+        { name: 'Set', endpoint: 'Set' },
+        { name: 'Accessories', endpoint: 'Accessories' },
+        { name: 'Hoodie Sweatshirt', endpoint: 'Hoodie.Sweatshirt' }
+    ];
+}
+
+// 移除重复的categories声明，直接使用getSearchCategories()函数
 
 // Global products storage
 let globalProducts = [];
@@ -82,10 +95,9 @@ function toggleGlobalSearch() {
     }
 }
 
-// Load products from all categories
+// Load products from all categories - 使用统一产品服务
 function loadAllProducts() {
     isLoadingGlobalProducts = true;
-    const baseUrl = 'https://opensheet.elk.sh/1hs4cXFLQRhdR8MfQ0vt0oMXhXplksGbU9vzkhO46J6A/';
     const productsContainer = document.getElementById('products-container');
     
     // 移除所有现有的全局加载指示器，确保只有一个
@@ -104,9 +116,27 @@ function loadAllProducts() {
     }
     
     // Create promises for all category fetches
-    const fetchPromises = productCategories.map(category => {
-        // 直接使用原始endpoint，不进行任何替换
+    const fetchPromises = getSearchCategories().map(category => {
         console.log(`Fetching category: ${category.name}, endpoint: ${category.endpoint}`);
+        
+        // 使用统一产品服务（如果可用）
+        if (typeof productService !== 'undefined') {
+            return productService.fetchProducts(category.endpoint)
+                .then(data => {
+                    return data.map(product => ({
+                        ...product,
+                        category: category.name,
+                        categoryUrl: `${category.endpoint}.html`
+                    }));
+                })
+                .catch(error => {
+                    console.error(`Error fetching ${category.name}:`, error);
+                    return [];
+                });
+        }
+        
+        // 后备方案：直接API调用
+        const baseUrl = 'https://opensheet.elk.sh/1hs4cXFLQRhdR8MfQ0vt0oMXhXplksGbU9vzkhO46J6A/';
         return fetch(baseUrl + category.endpoint)
             .then(response => {
                 if (!response.ok) {
@@ -126,9 +156,6 @@ function loadAllProducts() {
             })
             .catch(error => {
                 console.error(`Error fetching ${category.name}:`, error);
-                // 添加更详细的错误日志，包括完整URL和endpoint信息
-        console.log(`Failed URL: ${baseUrl + encodedEndpoint}`);
-        console.log(`Category endpoint: ${category.endpoint}, Encoded endpoint: ${encodedEndpoint}`);
                 return []; // Return empty array on error
             });
     });

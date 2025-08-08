@@ -21,7 +21,7 @@
 
 ## 页面说明
 
-- `HOT PRODUCTS.html` - 热门产品页面
+- `HOTPRODUCTS.html` - 热门产品页面
 - `T-Shirt.html` - T恤分类页面
 - `Pants.html` - 裤子分类页面
 - `Shoes.html` - 鞋子分类页面
