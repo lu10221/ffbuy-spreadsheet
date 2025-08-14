@@ -21,11 +21,6 @@ const CONFIG = {
         // 根据分类名获取分类对象
         getCategoryByName: function(name) {
             return CONFIG.categories.find(c => c.name === name);
-        },
-        
-        // 根据文件名获取分类对象
-        getCategoryByFileName: function(fileName) {
-            return CONFIG.categories.find(c => c.fileName === fileName);
         }
     },
     
@@ -71,76 +66,66 @@ const CONFIG = {
         { name: 'COD', logo: 'img/cod.png', alt: 'Cash on Delivery' }
     ],
     
-    // 分类配置 - 统一管理所有分类信息
+    // 分类配置 - 统一管理所有分类信息 (SPA架构)
     categories: [
         { 
             name: 'HOTPRODUCTS', 
             endpoint: 'HOTPRODUCTS', 
             icon: 'fas fa-fire',
-            fileName: 'HOTPRODUCTS.html',
             displayName: 'HOTPRODUCTS'
         },
         { 
             name: 'T-Shirt', 
             endpoint: 'T-Shirt', 
             icon: 'fas fa-tshirt',
-            fileName: 'T-Shirt.html',
             displayName: 'T-Shirt'
         },
         { 
             name: 'Pants', 
             endpoint: 'Pants', 
             icon: 'fas fa-socks',
-            fileName: 'Pants.html',
             displayName: 'Pants'
         },
         { 
             name: 'Shoes', 
             endpoint: 'Shoes', 
             icon: 'fas fa-shoe-prints',
-            fileName: 'Shoes.html',
             displayName: 'Shoes'
         },
         { 
             name: 'CheapShoes', 
             endpoint: 'CheapShoes', 
             icon: 'fas fa-tags',
-            fileName: 'cheapshoes.html', // 注意：实际文件名是小写
             displayName: 'CheapShoes'
         },
         { 
             name: 'Set', 
             endpoint: 'Set', 
             icon: 'fas fa-layer-group',
-            fileName: 'Set.html',
             displayName: 'Set'
         },
         { 
             name: 'Accessories', 
             endpoint: 'Accessories', 
             icon: 'fas fa-gem',
-            fileName: 'Accessories.html',
             displayName: 'Accessories'
         },
         { 
-            name: 'Hoodie Sweatshirt', 
-            endpoint: 'Hoodie Sweatshirt', 
+            name: 'Hoodie-Sweatshirt', 
+            endpoint: 'Hoodie-Sweatshirt', 
             icon: 'fas fa-tshirt',
-            fileName: 'Hoodie Sweatshirt.html',
             displayName: 'Hoodie/Sweatshirt'
         },
         { 
             name: 'ELECTRONICOS', 
             endpoint: 'ELECTRONICOS', 
             icon: 'fas fa-laptop',
-            fileName: 'ELECTRONICOS.html',
             displayName: 'ELECTRONICOS'
         },
         { 
             name: 'PERFUME', 
             endpoint: 'PERFUME', 
             icon: 'fas fa-spray-can',
-            fileName: 'PERFUME.html',
             displayName: 'PERFUME'
         }
     ],

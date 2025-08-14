@@ -1,56 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-DZ3110PTYG"></script>
-<script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-    gtag('config', 'G-DZ3110PTYG');
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZ3110PTYG"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-DZ3110PTYG');
 
-    // 🔽 自动获取并上报 utm_content 参数
-    const urlParams = new URLSearchParams(window.location.search);
-    const utmContent = urlParams.get('utm_content');
-    if (utmContent) {
-        gtag('event', 'utm_content_event', {
-            utm_content: utmContent
-        });
-    }
-</script>
+        // 🔽 自动获取并上报 utm_content 参数
+        const urlParams = new URLSearchParams(window.location.search);
+        const utmContent = urlParams.get('utm_content');
+        if (utmContent) {
+            gtag('event', 'utm_content_event', {
+                utm_content: utmContent
+            });
+        }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>$FFBuy SpreadSheet</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="global-search.css">    
+    <link rel="stylesheet" href="product-detail-modal.css">
+    
+    <!-- 🔥 核心配置文件 - 必须最先加载 -->
     <script src="config.js"></script>
+    
+    <!-- 其他功能模块 -->
     <script src="product-service.js"></script>
     <script src="product-renderer.js"></script>
     <script src="trust-info.js"></script>
     <script src="product-trust-info.js"></script>
-    <meta http-equiv="refresh" content="0;url=Shoes.html">
+    <script src="product-detail.js"></script>
+    <script src="global-search.js"></script>
 </head>
 <body>
-    <div class="top-info-bar"> 
-   <i class="fas fa-shield-alt"></i> 
-   This page displays products only. Orders are securely processed via <strong style="color:#2476db; font-weight:600;">CNFANS Platform</strong> with buyer protection & after-sales support. 
- </div>
-    <div class="fixed-logo-bar">
-        <a href="index.html" class="logo">$FFBuy SpreadSheet</a>
+    <!-- 🔥 信任信息栏 -->
+    <div class="top-info-bar" id="trust-bar"> 
+        <i class="fas fa-shield-alt"></i> 
+        This page displays products only. Orders are securely processed via <strong style="color:#2476db; font-weight:600;">CNFANS Platform</strong> with buyer protection & after-sales support.
     </div>
+    
+
+    
     <header>
         <div class="header-top">
-            <div class="nav-links">
-                <a href="HOTPRODUCTS.html"><i class="fas fa-fire"></i> HOTPRODUCTS</a>
-                <a href="T-Shirt.html"><i class="fas fa-tshirt"></i> T-Shirt</a>
-                <a href="Pants.html"><i class="fas fa-socks"></i> Pants</a>
-                <a href="Shoes.html" class="active"><i class="fas fa-shoe-prints"></i> Shoes</a>
-                <a href="CheapShoes.html"><i class="fas fa-tags"></i> CheapShoes</a>
-                <a href="Set.html"><i class="fas fa-layer-group"></i> Set</a>
-                <a href="Accessories.html"><i class="fas fa-gem"></i> Accessories</a>
-                <a href="Hoodie Sweatshirt.html"><i class="fas fa-tshirt"></i> Hoodie/Sweatshirt</a>
-                <a href="ELECTRONICOS.html"><i class="fas fa-laptop"></i> ELECTRONICOS</a>
-                <a href="PERFUME.html"><i class="fas fa-spray-can"></i> PERFUME</a>
+            <a href="#" class="logo" onclick="SPA.navigateToCategory(CONFIG.SITE.DEFAULT_CATEGORY)">$FFBuy SpreadSheet</a>
+            <div class="nav-links" id="header-nav">
+                <!-- 导航将由SPA动态生成 -->
             </div>
         </div>
         <div class="header-bottom">
@@ -61,105 +61,228 @@
         </div>
     </header>
 
-<div style="text-align: center; margin: 12px 0 18px;">
-    <div style="font-size: 13px; color: #555; margin-bottom: 6px;"><strong>Secure payments</strong> supported by</div>
-    <div style="display: inline-flex; align-items: center; gap: 12px;">
-        <img src="img/PayPal.svg" alt="PayPal" height="24" style="padding: 0 4px; vertical-align: middle;">
-        <img src="img/Visa_Logo.png" alt="Visa" height="24" style="padding: 0 4px; vertical-align: middle;">
-        <img src="img/Mastercard-logo.png" alt="Mastercard" height="24" style="padding: 0 4px; vertical-align: middle;">
-        <img src="img/cod.png" alt="Cash on Delivery" height="24" style="padding: 0 4px; vertical-align: middle;">
+    <!-- 🔥 支付方式信息 -->
+    <div id="payment-methods" style="text-align: center; margin: 12px 0 18px;">
+        <div style="font-size: 13px; color: #555; margin-bottom: 6px;"><strong>Secure payments</strong> supported by</div>
+        <div style="display: inline-flex; align-items: center; gap: 12px;" id="payment-icons">
+            <!-- 支付图标将由SPA动态生成 -->
+        </div>
     </div>
-</div>
-    <nav>
-        <a href="HOTPRODUCTS.html" class="active"><i class="fas fa-fire"></i> HOTPRODUCTS</a>
-        <a href="T-Shirt.html"><i class="fas fa-tshirt"></i> T-Shirt</a>
-        <a href="Pants.html"><i class="fas fa-socks"></i> Pants</a>
-        <a href="Shoes.html"><i class="fas fa-shoe-prints"></i> Shoes</a>
-        <a href="CheapShoes.html"><i class="fas fa-tags"></i> CheapShoes</a>
-        <a href="Set.html"><i class="fas fa-layer-group"></i> Set</a>
-        <a href="Accessories.html"><i class="fas fa-gem"></i> Accessories</a>
-        <a href="Hoodie Sweatshirt.html"><i class="fas fa-tshirt"></i> Hoodie/Sweatshirt</a>
-        <a href="ELECTRONICOS.html"><i class="fas fa-laptop"></i> ELECTRONICOS</a>
-        <a href="PERFUME.html"><i class="fas fa-spray-can"></i> PERFUME</a>
+
+    <!-- 🔥 主导航 -->
+    <nav id="main-nav">
+        <!-- 导航将由SPA动态生成 -->
     </nav>
 
+    <!-- 🔥 主内容区域 -->
     <div class="container">
-        <div class="products-grid" id="products-container">
-            <!-- Products will be loaded dynamically from JSON data -->
-            <div class="loading-indicator">
-                <i class="fas fa-spinner fa-spin"></i> Loading products...
+        <!-- 加载状态 -->
+        <div id="loading-indicator" style="display: none; text-align: center; padding: 40px;">
+            <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #666;"></i>
+            <p style="margin-top: 10px; color: #666;">Loading products...</p>
+        </div>
+        
+        <!-- 错误状态 -->
+        <div id="error-indicator" style="display: none; text-align: center; padding: 40px;">
+            <i class="fas fa-exclamation-triangle" style="font-size: 24px; color: #e74c3c;"></i>
+            <p style="margin-top: 10px; color: #e74c3c;" id="error-message">Failed to load products</p>
+            <button onclick="SPA.retryLoadCategory()" style="margin-top: 15px; padding: 8px 16px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer;">Retry</button>
+        </div>
+        
+        <!-- 产品网格 -->
+         <div class="products-grid" id="products-container">
+             <!-- Products will be loaded dynamically -->
+         </div>
+    </div>
+
+    <!-- 🔥 浮动按钮 -->
+    <div class="floating-buttons" id="floatingButtons">
+        <div class="float-btn toggle-btn" id="toggleFloatingBtn"><i class="fas fa-headset"></i></div>
+        <div class="floating-content" id="floatingContent">
+            <img src="img/query.png" alt="Trust Guarantee" class="trust-icon" id="trustBtn">
+            <img src="img/telegram.png" alt="Telegram" class="telegram-icon">
+            <img src="img/ws.png" alt="WhatsApp" class="whatsapp-icon">
+        </div>
+    </div>
+    <div class="float-btn back-to-top"><i class="fas fa-arrow-up"></i></div>
+
+    <!-- 🔥 商品详情弹窗 -->
+    <div class="product-detail-modal" id="productDetailModal">
+        <div class="product-detail-content">
+            <div class="product-detail-header">
+                <h2 class="product-detail-title">Product Details</h2>
+                <button class="product-detail-close" id="closeDetailModal">&times;</button>
+            </div>
+            <div class="product-detail-body" id="productDetailBody">
+                <div class="product-detail-loading">
+                    <i class="fas fa-spinner fa-spin"></i> Loading product details...
+                </div>
             </div>
         </div>
     </div>
 
-<div class="floating-buttons" id="floatingButtons">
-    <div class="float-btn toggle-btn" id="toggleFloatingBtn"><i class="fas fa-headset"></i></div>
-    <div class="floating-content" id="floatingContent">
-        <img src="img/query.png" alt="Trust Guarantee" class="trust-icon" id="trustBtn">
-        <img src="img/telegram.png" alt="Telegram" class="telegram-icon">
-        <img src="img/ws.png" alt="WhatsApp" class="whatsapp-icon">
-    </div>
-</div>
-<div class="float-btn back-to-top"><i class="fas fa-arrow-up"></i></div>
-
-<script src="floating-buttons.js"></script>
-<script src="trust-info.js"></script>
-<script>
-    // Document ready function
-    document.addEventListener('DOMContentLoaded', function() {
-        // Fetch products from JSON API
-        fetchHotProducts();
-        
-        // Product filter functionality
-        const searchBox = document.querySelector('.search-box');
-        
-        searchBox.addEventListener('keyup', function() {
-            const searchTerm = this.value.toLowerCase();
-            const productCards = document.querySelectorAll('.product-card');
+    <!-- 🔥 SPA核心脚本 -->
+    <script>
+        // SPA应用核心
+         const SPA = {
+             currentCategory: null,
+             isLoading: false,
             
-            productCards.forEach(card => {
-                const title = card.querySelector('.product-title').textContent.toLowerCase();
+            // 初始化应用
+            init() {
+                this.generateNavigation();
+                this.generatePaymentMethods();
+                this.setupEventListeners();
+                this.handleInitialRoute();
+            },
+            
+            // 处理初始路由
+            handleInitialRoute() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const category = urlParams.get('category') || CONFIG.SITE.DEFAULT_CATEGORY;
+                this.navigateToCategory(category, false);
+            },
+            
+            // 生成导航菜单
+            generateNavigation() {
+                const headerNav = document.getElementById('header-nav');
+                const mainNav = document.getElementById('main-nav');
                 
-                if (title.includes(searchTerm)) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
+                const navHTML = CONFIG.categories.map(category => {
+                    return `<a href="#" onclick="SPA.navigateToCategory('${category.name}')" data-category="${category.name}">
+                        <i class="${category.icon}"></i> ${category.displayName}
+                    </a>`;
+                }).join('\n');
+                
+                if (headerNav) headerNav.innerHTML = navHTML;
+                if (mainNav) mainNav.innerHTML = navHTML;
+            },
+            
+            // 生成支付方式
+            generatePaymentMethods() {
+                const paymentIcons = document.getElementById('payment-icons');
+                if (paymentIcons && CONFIG.PAYMENT_METHODS) {
+                    paymentIcons.innerHTML = CONFIG.PAYMENT_METHODS.map(method => 
+                        `<img src="${method.logo}" alt="${method.alt}" height="24" style="padding: 0 4px; vertical-align: middle;">`
+                    ).join('\n');
                 }
-            });
+            },
+            
+            // 设置事件监听器
+             setupEventListeners() {
+                 // 浏览器前进后退
+                 window.addEventListener('popstate', (event) => {
+                     if (event.state && event.state.category) {
+                         this.navigateToCategory(event.state.category, false);
+                     } else {
+                         this.handleInitialRoute();
+                     }
+                 });
+             },
+            
+            // 导航到分类
+            navigateToCategory(categoryName, updateHistory = true) {
+                if (this.isLoading) return;
+                
+                const category = CONFIG.UTILS.getCategoryByName(categoryName);
+                if (!category) {
+                    console.error('Category not found:', categoryName);
+                    return;
+                }
+                
+                this.currentCategory = categoryName;
+                
+                // 更新URL和历史记录
+                if (updateHistory) {
+                    const newUrl = `${window.location.pathname}?category=${encodeURIComponent(categoryName)}`;
+                    history.pushState({ category: categoryName }, '', newUrl);
+                }
+                
+                // 更新页面标题
+                document.title = `${category.displayName} - ${CONFIG.SITE.NAME}`;
+                
+                // 更新导航状态
+                this.updateNavigationState(categoryName);
+                
+                // 加载产品
+                this.loadCategoryProducts(category);
+            },
+            
+            // 更新导航状态
+            updateNavigationState(activeCategory) {
+                document.querySelectorAll('nav a, .nav-links a').forEach(link => {
+                    link.classList.remove('active');
+                    if (link.dataset.category === activeCategory) {
+                        link.classList.add('active');
+                    }
+                });
+            },
+            
+            // 加载分类产品
+             async loadCategoryProducts(category) {
+                 this.showLoading();
+                 
+                 try {
+                     // 使用现有的productRenderer来加载和渲染产品
+                     if (!productRenderer.init('products-container')) {
+                         throw new Error('Failed to initialize product renderer');
+                     }
+                     
+                     await productRenderer.loadProducts(category.endpoint);
+                     this.hideLoading();
+                     
+                 } catch (error) {
+                     console.error('Error loading products:', error);
+                     this.showError('Failed to load products. Please try again.');
+                 }
+             },
+            
+            // 显示加载状态
+            showLoading() {
+                this.isLoading = true;
+                document.getElementById('loading-indicator').style.display = 'block';
+                document.getElementById('error-indicator').style.display = 'none';
+                document.getElementById('products-container').style.display = 'none';
+            },
+            
+            // 隐藏加载状态
+            hideLoading() {
+                this.isLoading = false;
+                document.getElementById('loading-indicator').style.display = 'none';
+                document.getElementById('products-container').style.display = 'grid';
+            },
+            
+            // 显示错误
+            showError(message) {
+                this.isLoading = false;
+                document.getElementById('loading-indicator').style.display = 'none';
+                document.getElementById('products-container').style.display = 'none';
+                document.getElementById('error-indicator').style.display = 'block';
+                document.getElementById('error-message').textContent = message;
+            },
+            
+            // 重试加载
+            retryLoadCategory() {
+                if (this.currentCategory) {
+                    const category = CONFIG.UTILS.getCategoryByName(this.currentCategory);
+                    if (category) {
+                        this.loadCategoryProducts(category);
+                    }
+                }
+            }
+        };
+        
+        // 页面加载完成后初始化SPA
+        document.addEventListener('DOMContentLoaded', () => {
+            SPA.init();
         });
         
-        // Mobile menu functionality removed - now using horizontal scrollable navigation
-        
-    });
-    
-    // 使用新的统一服务架构
-    async function fetchHotProducts() {
-        try {
-            // 初始化产品渲染器
-            if (!productRenderer.init()) {
-                console.error('Failed to initialize product renderer');
-                return;
-            }
-            
-            // 加载HOTPRODUCTS数据
-            await productRenderer.loadProducts('HOTPRODUCTS');
-            
-        } catch (error) {
-            console.error('Error in fetchHotProducts:', error);
-            const productsContainer = document.getElementById('products-container');
-            if (productsContainer) {
-                productsContainer.innerHTML = `<div class="error-message">${error.message}</div>`;
-            }
-        }
-    }
-    // 旧的产品加载和滚动处理逻辑已移除
-    // 现在使用统一的 product-service.js 和 product-renderer.js 模块
-    
-    // When page is loaded, call fetchHotProducts function to get product data
-    document.addEventListener('DOMContentLoaded', fetchHotProducts);
-</script>
-    <script src="category-navigation.js"></script>
-    <script src="global-search.js"></script>
+        // 全局暴露SPA对象
+         window.SPA = SPA;
+     </script>
+     
+     <!-- 🔥 浮动按钮脚本 -->
+     <script src="floating-buttons.js"></script>
 </body>
 </html>
 

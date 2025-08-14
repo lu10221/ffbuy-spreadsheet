@@ -14,7 +14,7 @@ class NavigationGenerator {
 
         return this.categories.map(category => {
             const isActive = currentCategory === category.name ? ' class="active"' : '';
-            return `<a href="${category.fileName}"${isActive}><i class="${category.icon}"></i> ${category.displayName}</a>`;
+            return `<a href="?category=${encodeURIComponent(category.name)}"${isActive}><i class="${category.icon}"></i> ${category.displayName}</a>`;
         }).join('\n                ');
     }
 
@@ -59,11 +59,16 @@ class NavigationGenerator {
 
     // 获取当前页面分类
     getCurrentCategory() {
-        const currentPath = window.location.pathname;
-        const fileName = currentPath.split('/').pop();
+        const urlParams = new URLSearchParams(window.location.search);
+        const categoryParam = urlParams.get('category');
         
-        const category = this.categories.find(cat => cat.fileName === fileName);
-        return category ? category.name : '';
+        if (categoryParam) {
+            const category = this.categories.find(cat => cat.name === categoryParam);
+            return category ? category.name : '';
+        }
+        
+        // 默认返回配置中的默认分类
+        return this.config.SITE?.DEFAULT_CATEGORY || '';
     }
 
     // 初始化页面导航

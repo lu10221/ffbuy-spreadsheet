@@ -28,7 +28,7 @@ class ConfigManager {
         // 验证分类配置
         if (this.config.categories) {
             this.config.categories.forEach((category, index) => {
-                const requiredFields = ['name', 'endpoint', 'icon', 'fileName'];
+                const requiredFields = ['name', 'endpoint', 'icon', 'displayName'];
                 const missingFields = requiredFields.filter(field => !category[field]);
                 
                 if (missingFields.length > 0) {
@@ -43,7 +43,6 @@ class ConfigManager {
         // 全局获取配置的便捷方法
         window.getConfig = (path) => this.getConfig(path);
         window.getCategoryByName = (name) => this.getCategoryByName(name);
-        window.getCategoryByFileName = (fileName) => this.getCategoryByFileName(fileName);
         window.getApiUrl = (endpoint) => this.getApiUrl(endpoint);
     }
 
@@ -61,10 +60,7 @@ class ConfigManager {
         return this.config.categories?.find(cat => cat.name === name);
     }
 
-    // 根据文件名获取分类
-    getCategoryByFileName(fileName) {
-        return this.config.categories?.find(cat => cat.fileName === fileName);
-    }
+
 
     // 根据端点获取分类
     getCategoryByEndpoint(endpoint) {
@@ -96,19 +92,12 @@ class ConfigManager {
         return this.getApiUrl(category.endpoint);
     }
 
-    // 获取当前页面分类
-    getCurrentPageCategory() {
-        const currentPath = window.location.pathname;
-        const fileName = currentPath.split('/').pop();
-        return this.getCategoryByFileName(fileName);
-    }
-
     // 生成分类导航数据
     getNavigationData(currentCategory = '') {
         return this.getAllCategories().map(category => ({
             ...category,
             isActive: category.name === currentCategory,
-            url: category.fileName
+            url: `?category=${encodeURIComponent(category.name)}`
         }));
     }
 
