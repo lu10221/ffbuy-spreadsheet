@@ -135,9 +135,11 @@ function loadAllProducts() {
                 });
         }
         
-        // 后备方案：直接API调用
-        const baseUrl = 'https://opensheet.elk.sh/1hs4cXFLQRhdR8MfQ0vt0oMXhXplksGbU9vzkhO46J6A/';
-        return fetch(baseUrl + category.endpoint)
+        // 后备方案：直接API调用 - 使用CONFIG
+        const apiUrl = (typeof CONFIG !== 'undefined' && CONFIG.UTILS) 
+            ? CONFIG.UTILS.getCategoryUrl(category.endpoint)
+            : `https://opensheet.elk.sh/1hs4cXFLQRhdR8MfQ0vt0oMXhXplksGbU9vzkhO46J6A/${encodeURIComponent(category.endpoint)}`;
+        return fetch(apiUrl)
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`Failed to fetch ${category.name}`);

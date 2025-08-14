@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <!-- Google tag (gtag.js) -->
@@ -110,7 +110,16 @@
 </div>
 <div class="float-btn back-to-top"><i class="fas fa-arrow-up"></i></div>
 
-<script src="config.js"></script>
+    <!-- Core configuration file - must load first -->
+    <script src="config.js"></script>
+    
+    <!-- Configuration manager - provides config utilities -->
+    <script src="config-manager.js"></script>
+    
+    <!-- Navigation generator - auto-generates navigation based on config -->
+    <script src="navigation-generator.js"></script>
+    
+    <!-- Other modules -->
 <script src="product-service.js"></script>
 <script src="product-renderer.js"></script>
 <script src="trust-info.js"></script>
@@ -212,6 +221,7 @@
     <script src="global-search.js"></script>
 </body>
 </html>
+
 
 
 
