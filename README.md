@@ -55,11 +55,6 @@
 - `?category=ELECTRONICOS` - 电子产品
 - `?category=PERFUME` - 香水
 
-## 数据源
-
-所有产品数据通过OpenSheet API从Google Sheets获取：
-`https://opensheet.elk.sh/1hs4cXFLQRhdR8MfQ0vt0oMXhXplksGbU9vzkhO46J6A/[分类名称]`
-
 ## 许可证
 
 MIT
