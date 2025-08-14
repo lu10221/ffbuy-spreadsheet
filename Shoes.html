@@ -25,7 +25,16 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="global-search.css">    
     <link rel="stylesheet" href="product-detail-modal.css">
+    <!-- 🔥 核心配置文件 - 必须最先加载 -->
     <script src="config.js"></script>
+    
+    <!-- 🔥 配置管理器 - 提供配置相关工具 -->
+    <script src="config-manager.js"></script>
+    
+    <!-- 🔥 导航生成器 - 基于配置自动生成导航 -->
+    <script src="navigation-generator.js"></script>
+    
+    <!-- 其他功能模块 -->
     <script src="product-service.js"></script>
     <script src="product-renderer.js"></script>
     <script src="trust-info.js"></script>

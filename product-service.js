@@ -19,8 +19,10 @@ class ProductService {
             }
         }
 
-        // 构建API URL
-        const apiUrl = `${CONFIG.API.BASE_URL}/${endpoint}`;
+        // 构建API URL - 使用配置中的工具函数
+        const apiUrl = (CONFIG.UTILS && CONFIG.UTILS.getCategoryUrl) 
+            ? CONFIG.UTILS.getCategoryUrl(endpoint)
+            : `${CONFIG.API.BASE_URL}/${encodeURIComponent(endpoint)}`;
         
         try {
             const data = await this.fetchWithRetry(apiUrl);

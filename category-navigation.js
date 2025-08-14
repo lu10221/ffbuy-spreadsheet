@@ -16,7 +16,7 @@ function getCategories() {
         { name: 'CheapShoes', endpoint: 'CheapShoes', icon: 'fas fa-tags' },
         { name: 'Set', endpoint: 'Set', icon: 'fas fa-layer-group' },
         { name: 'Accessories', endpoint: 'Accessories', icon: 'fas fa-gem' },
-        { name: 'Hoodie Sweatshirt', endpoint: 'Hoodie.Sweatshirt', icon: 'fas fa-tshirt' },
+        { name: 'Hoodie Sweatshirt', endpoint: 'Hoodie Sweatshirt', icon: 'fas fa-tshirt' },
         { name: 'ELECTRONICOS', endpoint: 'ELECTRONICOS', icon: 'fas fa-laptop' },
         { name: 'PERFUME', endpoint: 'PERFUME', icon: 'fas fa-spray-can' }
     ];
@@ -289,14 +289,17 @@ function loadCategoryProducts(categoryName, endpoint) {
         return Promise.resolve(CategoryNav.categoryProducts[categoryName]);
     }
     
-    // 构建API URL
-    const apiUrl = `https://opensheet.elk.sh/1hs4cXFLQRhdR8MfQ0vt0oMXhXplksGbU9vzkhO46J6A/${endpoint}`;
+    // 构建API URL - 使用配置中的工具函数
+    const apiUrl = (typeof CONFIG !== 'undefined' && CONFIG.UTILS) 
+        ? CONFIG.UTILS.getCategoryUrl(endpoint)
+        : `https://opensheet.elk.sh/1hs4cXFLQRhdR8MfQ0vt0oMXhXplksGbU9vzkhO46J6A/${encodeURIComponent(endpoint)}`;
     
-    // 设置超时
+    // 设置超时 - 使用配置中的超时时间
+    const timeout = (typeof CONFIG !== 'undefined' && CONFIG.API) ? CONFIG.API.TIMEOUT : 10000;
     const timeoutPromise = new Promise((_, reject) => {
         setTimeout(() => {
             reject(new Error('Request timeout, please check network connection'));
-        }, 10000);
+        }, timeout);
     });
     
     return Promise.race([fetch(apiUrl), timeoutPromise])
