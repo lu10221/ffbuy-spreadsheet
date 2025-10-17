@@ -26,7 +26,7 @@ const CONFIG = {
     
     // API配置
     API: {
-        BASE_URL: 'https://opensheet.elk.sh/1hs4cXFLQRhdR8MfQ0vt0oMXhXplksGbU9vzkhO46J6A',
+        BASE_URL: 'https://opensheet.elk.sh/172unKwTAeeQ7uYNI5Ydivvyjo_UvNGcUXdPuEGcEs1Q',
         TIMEOUT: 10000, // 10秒超时
         RETRY_COUNT: 3, // 重试次数
         RETRY_DELAY: 1000 // 重试延迟(毫秒)
@@ -69,16 +69,10 @@ const CONFIG = {
     // 分类配置 - 统一管理所有分类信息 (SPA架构)
     categories: [
         { 
-            name: 'HOTPRODUCTS', 
-            endpoint: 'HOTPRODUCTS', 
-            icon: 'fas fa-fire',
-            displayName: 'HOTPRODUCTS'
-        },
-        { 
-            name: 'T-Shirt', 
-            endpoint: 'T-Shirt', 
+            name: 'Shirts', 
+            endpoint: 'Shirts', 
             icon: 'fas fa-tshirt',
-            displayName: 'T-Shirt'
+            displayName: 'Shirts'
         },
         { 
             name: 'Pants', 
@@ -93,10 +87,16 @@ const CONFIG = {
             displayName: 'Shoes'
         },
         { 
-            name: 'CheapShoes', 
-            endpoint: 'CheapShoes', 
-            icon: 'fas fa-tags',
-            displayName: 'CheapShoes'
+            name: 'Hoodies.Sweatshirts', 
+            endpoint: 'Hoodies.Sweatshirts', 
+            icon: 'fas fa-tshirt',
+            displayName: 'Hoodies/Sweatshirts'
+        },
+        { 
+            name: 'Coats.Outerwear', 
+            endpoint: 'Coats.Outerwear', 
+            icon: 'fas fa-user-tie',
+            displayName: 'Coats/Outerwear'
         },
         { 
             name: 'Set', 
@@ -111,22 +111,22 @@ const CONFIG = {
             displayName: 'Accessories'
         },
         { 
-            name: 'Hoodie-Sweatshirt', 
-            endpoint: 'Hoodie-Sweatshirt', 
-            icon: 'fas fa-tshirt',
-            displayName: 'Hoodie/Sweatshirt'
-        },
-        { 
-            name: 'ELECTRONICOS', 
-            endpoint: 'ELECTRONICOS', 
+            name: 'Electronics', 
+            endpoint: 'Electronics', 
             icon: 'fas fa-laptop',
-            displayName: 'ELECTRONICOS'
+            displayName: 'Electronics'
         },
         { 
-            name: 'PERFUME', 
-            endpoint: 'PERFUME', 
+            name: 'Perfumes', 
+            endpoint: 'Perfumes', 
             icon: 'fas fa-spray-can',
-            displayName: 'PERFUME'
+            displayName: 'Perfumes'
+        },
+        { 
+            name: 'Toys', 
+            endpoint: 'Toys', 
+            icon: 'fas fa-puzzle-piece',
+            displayName: 'Toys'
         }
     ],
     
