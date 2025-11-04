@@ -26,7 +26,7 @@ const CONFIG = {
     
     // API配置
     API: {
-        BASE_URL: 'https://opensheet.elk.sh/172unKwTAeeQ7uYNI5Ydivvyjo_UvNGcUXdPuEGcEs1Q',
+        BASE_URL: 'https://opensheet.elk.sh/1GEMNqUmGYTSH4oEpcqbIQYWQfihefyB0GeeANSxsucw',
         TIMEOUT: 10000, // 10秒超时
         RETRY_COUNT: 3, // 重试次数
         RETRY_DELAY: 1000 // 重试延迟(毫秒)
