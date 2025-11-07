@@ -907,10 +907,7 @@ nav a.active {
     margin-bottom: 0px;
 }
 
-.telegram-icon:hover,
-.trust-icon:hover {
-    transform: scale(1.1);
-}
+/* removed duplicate hover rule to avoid conflicting overrides */
 
 /* Back to Top Button */
 .back-to-top {
@@ -1311,11 +1308,8 @@ nav a.active {
         padding: 4px;
     }
 
-    /* Adjust nav position for smaller screens */
-    nav {
-        top: 90px;
-        /* Smaller top value for smaller screens */
-    }
+    /* Remove ineffective top offset for static-position nav on small screens */
+    /* nav remains static; no top offset needed */
 
     /* Product adjustments for very small screens */
     .product-image {
