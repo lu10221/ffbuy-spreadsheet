@@ -82,6 +82,11 @@ function toggleGlobalSearch() {
     if (isGlobalSearchActive && globalProducts.length === 0 && !isLoadingGlobalProducts) {
         loadAllProducts();
     }
+
+    // 切换到全局搜索时，恢复无限滚动
+    if (isGlobalSearchActive && typeof productRenderer !== 'undefined') {
+        productRenderer.searchActive = false;
+    }
     
     // Apply current search term to new search mode
     const searchBox = document.querySelector('.search-box');
@@ -195,6 +200,14 @@ function loadAllProducts() {
 
 // Perform global search across all products
 function performGlobalSearch(searchTerm) {
+    // 搜索期间暂停分类的无限滚动，并取消在途加载
+    if (typeof productRenderer !== 'undefined') {
+        productRenderer.searchActive = true;
+        if (typeof productRenderer.cancelLoad === 'function') {
+            productRenderer.cancelLoad();
+        }
+    }
+
     if (globalProducts.length === 0) {
         if (!isLoadingGlobalProducts) {
             loadAllProducts();
@@ -206,119 +219,69 @@ function performGlobalSearch(searchTerm) {
     
     // Clear current products if we're showing search results
     if (searchTerm.trim() !== '') {
-        // Save current scroll position
-        const scrollPosition = window.scrollY;
-        
-        // Store original content if this is the first search
-        if (!productsContainer.hasAttribute('data-original-content') && !productsContainer.querySelector('.global-search-results')) {
+        // 保存原始内容（首次搜索）
+        if (!productsContainer.hasAttribute('data-original-content')) {
             productsContainer.setAttribute('data-original-content', productsContainer.innerHTML);
         }
-        
-        // Clear container and add search results header
+
+        // 清空容器并确保为统一的5列栅格
         productsContainer.innerHTML = '';
-        const searchHeader = document.createElement('div');
-        searchHeader.className = 'global-search-header';
-        searchHeader.innerHTML = `<h2>Global Search Results for "${searchTerm}"</h2>`;
-        productsContainer.appendChild(searchHeader);
-        
-        // Create results container
-        const resultsContainer = document.createElement('div');
-        resultsContainer.className = 'global-search-results';
-        productsContainer.appendChild(resultsContainer);
-        
-        // Filter products by search term
-        const matchingProducts = globalProducts.filter(product => 
-            product.spbt.toLowerCase().includes(searchTerm)
+        productsContainer.classList.add('products-grid');
+
+        // 过滤匹配的商品
+        const matchingProducts = globalProducts.filter(product =>
+            product.spbt && product.spbt.toLowerCase().includes(searchTerm)
         );
-        
-        // Group products by category
-        const productsByCategory = {};
-        matchingProducts.forEach(product => {
-            if (!productsByCategory[product.category]) {
-                productsByCategory[product.category] = [];
-            }
-            productsByCategory[product.category].push(product);
-        });
-        
-        // Display results by category
+
+        // 使用统一产品渲染器的卡片结构，保证样式一致
         if (matchingProducts.length === 0) {
-            resultsContainer.innerHTML = '<div class="no-results">No products found matching your search</div>';
+            productsContainer.innerHTML = `<div class="no-products">${(typeof CONFIG !== 'undefined' && CONFIG.ERROR_MESSAGES) ? CONFIG.ERROR_MESSAGES.NO_PRODUCTS : 'No products found'}</div>`;
         } else {
-            // For each category with results
-            Object.keys(productsByCategory).forEach(category => {
-                const categoryProducts = productsByCategory[category];
-                
-                // Create category section
-                const categorySection = document.createElement('div');
-                categorySection.className = 'category-section';
-                
-                // Add category header with link
-                const categoryHeader = document.createElement('h3');
-                categoryHeader.className = 'category-header';
-                const categoryUrl = categoryProducts[0].categoryUrl;
-                categoryHeader.innerHTML = `<a href="${categoryUrl}">${category} <span class="product-count">(${categoryProducts.length})</span></a>`;
-                categorySection.appendChild(categoryHeader);
-                
-                // Add products grid for this category
-                const productsGrid = document.createElement('div');
-                productsGrid.className = 'products-grid category-products';
-                
-                // Add products to grid
-                categoryProducts.forEach(product => {
-                    const productCard = document.createElement('div');
-                    productCard.className = 'product-card';
-                    productCard.classList.add('fade-in');
-                    
-                    productCard.innerHTML = `
-                        <a href="${product.spURL}" target="_blank">
+            matchingProducts.forEach((product, i) => {
+                if (typeof productRenderer !== 'undefined' && typeof productRenderer.createProductCard === 'function') {
+                    const card = productRenderer.createProductCard(product, i);
+                    productsContainer.appendChild(card);
+                } else {
+                    // 后备：最简卡片结构
+                    const card = document.createElement('div');
+                    card.className = 'product-card';
+                    card.innerHTML = `
+                        <a href="${product.spURL}" target="_blank" rel="noopener noreferrer">
                             <img src="${product.ztURL}" class="product-image" alt="${product.spbt}">
                             <div class="product-info">
                                 <div class="product-title">${product.spbt}</div>
-                                <div class="product-subtitle">${product.category || 'Premium'} | ${product.brand || 'Quality Product'}</div>
-                                
-                                <div class="product-note">
-                                  <i class="fas fa-external-link-alt"></i> Click to view <strong style="color: #2476db; font-weight:600;">product details</strong>
-                                </div>
-                                
                                 <div class="product-price">
-                                    <div>
-                                        <span class="us-price">${product.US || '--'}</span>
-                                        <span class="eur-price">${product.EUR || '--'}</span>
-                                    </div>
+                                    <span class="us-price">${product.US || '--'}</span>
+                                    <span class="eur-price">${product.EUR || '--'}</span>
                                 </div>
                             </div>
-                        </a>
-                    `;
-                    
-                    productsGrid.appendChild(productCard);
-                });
-                
-                categorySection.appendChild(productsGrid);
-                resultsContainer.appendChild(categorySection);
+                        </a>`;
+                    productsContainer.appendChild(card);
+                }
             });
         }
+
+        // 在栅格外部添加“Back to Current Category”按钮，避免破坏5列布局
+        const containerWrapper = document.querySelector('.container');
+        if (containerWrapper && !document.getElementById('back-to-results-btn')) {
+            const backButton = document.createElement('button');
+            backButton.id = 'back-to-results-btn';
+            backButton.className = 'back-to-results-btn';
+            backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Current Category';
+            backButton.addEventListener('click', function() {
+                const searchBox = document.querySelector('.search-box');
+                if (searchBox) searchBox.value = '';
+                if (productsContainer.hasAttribute('data-original-content')) {
+                    productsContainer.innerHTML = productsContainer.getAttribute('data-original-content');
+                    productsContainer.removeAttribute('data-original-content');
+                }
+                backButton.remove();
+            });
+            const anchorNode = containerWrapper.querySelector('#loading-indicator') || containerWrapper.firstChild;
+            containerWrapper.insertBefore(backButton, anchorNode);
+        }
         
-        // Add back to results button
-        const backButton = document.createElement('button');
-        backButton.className = 'back-to-results-btn';
-        backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Current Category';
-        backButton.addEventListener('click', function() {
-            // Clear search box
-            const searchBox = document.querySelector('.search-box');
-            if (searchBox) {
-                searchBox.value = '';
-            }
-            
-            // Restore original content
-            if (productsContainer.hasAttribute('data-original-content')) {
-                productsContainer.innerHTML = productsContainer.getAttribute('data-original-content');
-                productsContainer.removeAttribute('data-original-content');
-            }
-        });
-        
-        searchHeader.prepend(backButton);
-        
-        // Restore scroll position
+        // 滚动到顶部，便于查看搜索结果
         window.scrollTo(0, 0);
     } else {
         // If search is cleared, restore original content
@@ -326,22 +289,102 @@ function performGlobalSearch(searchTerm) {
             productsContainer.innerHTML = productsContainer.getAttribute('data-original-content');
             productsContainer.removeAttribute('data-original-content');
         }
+        if (typeof productRenderer !== 'undefined') {
+            productRenderer.searchActive = false;
+        }
+        const backBtn = document.getElementById('back-to-results-btn');
+        if (backBtn) backBtn.remove();
     }
 }
 
 // Perform local search (current page only)
 function performLocalSearch(searchTerm) {
-    const productCards = document.querySelectorAll('.product-card');
-    
-    productCards.forEach(card => {
-        const title = card.querySelector('.product-title').textContent.toLowerCase();
-        
-        if (title.includes(searchTerm)) {
-            card.style.display = 'block';
-        } else {
-            card.style.display = 'none';
+    const productsContainer = document.getElementById('products-container');
+    if (!productsContainer) return;
+
+    const term = (searchTerm || '').toLowerCase();
+    const canUseRenderer = typeof productRenderer !== 'undefined' && Array.isArray(productRenderer.allProducts) && productRenderer.allProducts.length > 0;
+
+    if (term.trim() !== '' && canUseRenderer) {
+        productRenderer.searchActive = true;
+
+        // 保存原始内容（首次搜索）
+        if (!productsContainer.hasAttribute('data-original-content')) {
+            productsContainer.setAttribute('data-original-content', productsContainer.innerHTML);
         }
-    });
+        productsContainer.innerHTML = '';
+        productsContainer.classList.add('products-grid');
+
+        const matching = productRenderer.allProducts.filter(p => p.spbt && p.spbt.toLowerCase().includes(term));
+
+        if (matching.length === 0) {
+            productsContainer.innerHTML = `<div class="no-products">${(typeof CONFIG !== 'undefined' && CONFIG.ERROR_MESSAGES) ? CONFIG.ERROR_MESSAGES.NO_PRODUCTS : '没有找到商品'}</div>`;
+        } else {
+            matching.forEach((product, i) => {
+                const card = (typeof productRenderer.createProductCard === 'function')
+                    ? productRenderer.createProductCard(product, i)
+                    : createFallbackCard(product);
+                productsContainer.appendChild(card);
+            });
+        }
+
+        // 添加“返回当前分类”按钮
+        const containerWrapper = document.querySelector('.container');
+        if (containerWrapper && !document.getElementById('back-to-results-btn')) {
+            const backButton = document.createElement('button');
+            backButton.id = 'back-to-results-btn';
+            backButton.className = 'back-to-results-btn';
+            backButton.innerHTML = '<i class="fas fa-arrow-left"></i> 返回当前分类';
+            backButton.addEventListener('click', function() {
+                const searchBox = document.querySelector('.search-box');
+                if (searchBox) searchBox.value = '';
+                if (productsContainer.hasAttribute('data-original-content')) {
+                    productsContainer.innerHTML = productsContainer.getAttribute('data-original-content');
+                    productsContainer.removeAttribute('data-original-content');
+                }
+                productRenderer.searchActive = false;
+                backButton.remove();
+            });
+            const anchorNode = containerWrapper.querySelector('#loading-indicator') || containerWrapper.firstChild;
+            containerWrapper.insertBefore(backButton, anchorNode);
+        }
+
+        window.scrollTo(0, 0);
+    } else if (term.trim() === '' && canUseRenderer) {
+        // 清空搜索时恢复
+        productRenderer.searchActive = false;
+        if (productsContainer.hasAttribute('data-original-content')) {
+            productsContainer.innerHTML = productsContainer.getAttribute('data-original-content');
+            productsContainer.removeAttribute('data-original-content');
+        }
+        const backBtn = document.getElementById('back-to-results-btn');
+        if (backBtn) backBtn.remove();
+    } else {
+        // 后备方案：DOM级过滤（仅当前已渲染的卡片）
+        const productCards = document.querySelectorAll('.product-card');
+        productCards.forEach(card => {
+            const titleEl = card.querySelector('.product-title');
+            const title = titleEl ? titleEl.textContent.toLowerCase() : '';
+            card.style.display = title.includes(term) ? 'block' : 'none';
+        });
+    }
+
+    function createFallbackCard(product) {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
+            <a href="${product.spURL}" target="_blank" rel="noopener noreferrer">
+                <img src="${product.ztURL}" class="product-image" alt="${product.spbt}">
+                <div class="product-info">
+                    <div class="product-title">${product.spbt}</div>
+                    <div class="product-price">
+                        <span class="us-price">${product.US || '--'}</span>
+                        <span class="eur-price">${product.EUR || '--'}</span>
+                    </div>
+                </div>
+            </a>`;
+        return card;
+    }
 }
 
 // Initialize global search when DOM is loaded

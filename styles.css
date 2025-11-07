@@ -16,6 +16,62 @@ body {
     /* 为固定的logo栏添加上边距 */
 }
 
+/* Mobile UI enhancements */
+:root {
+    --mobile-gap: 8px;
+    --mobile-radius: 10px;
+    --mobile-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+/* Touch feedback */
+.product-card:active {
+    transform: translateY(-2px) scale(0.995);
+}
+
+/* Reduce motion on low-performance or accessibility preference */
+@media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+    .product-card { box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+}
+
+/* Safe area support for iOS notch devices */
+@supports (padding: env(safe-area-inset-top)) {
+    .fixed-logo-bar { padding-top: calc(12px + env(safe-area-inset-top)); }
+    .container {
+        padding-left: calc(12px + env(safe-area-inset-left));
+        padding-right: calc(12px + env(safe-area-inset-right));
+    }
+}
+
+/* Mobile layout tuning */
+@media (max-width: 768px) {
+    .products-grid { gap: var(--mobile-gap); }
+    .product-card { border-radius: var(--mobile-radius); box-shadow: var(--mobile-shadow); }
+    .product-title { font-size: clamp(13px, 3.8vw, 16px); line-height: 1.5; }
+    .us-price, .eur-price { font-size: clamp(14px, 3.5vw, 16px); }
+    .container { padding: 0 12px; }
+
+    /* Make nav horizontally scrollable chips */
+    .nav-links {
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x mandatory;
+        gap: 6px;
+    }
+    .nav-links a {
+        scroll-snap-align: start;
+        border: 1px solid #eee;
+        background: #fff;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Use aspect-ratio to stabilize image layout */
+    .product-image { aspect-ratio: 4 / 5; height: auto; }
+    .product-info { height: auto; }
+}
+
 /* Top Info Bar Styles */
 .top-info-bar {
     background: #f8f9fa;
@@ -85,17 +141,23 @@ header {
     .header-top {
         flex-direction: column;
         align-items: center;
+        padding: 10px 16px; /* 压缩头部内边距，减少logo与搜索栏间距 */
+        gap: 0;
     }
 
-    .nav-links {
-        margin-top: 15px;
-        justify-content: center;
+    /* 完全隐藏头部的nav-links容器，避免占位导致过大间距 */
+    .header-top .nav-links {
+        display: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        height: 0 !important;
+        max-height: 0 !important;
+        overflow: hidden !important;
     }
 
+    /* 保持导航chips仅在主nav中显示（非header） */
     .nav-links a {
-        margin: 3px 5px;
-        padding: 6px 10px;
-        font-size: 13px;
+        display: none;
     }
 }
 
@@ -117,7 +179,7 @@ header {
 .header-top .logo {
     display: flex;
     align-items: center;
-    margin-bottom: 15px;
+    margin-bottom: 8px; /* 移动端更紧凑的logo与搜索栏间距 */
     justify-content: center;
 }
 
@@ -136,7 +198,7 @@ header {
 
 .search-box {
     width: 100%;
-    padding: 10px 18px;
+    padding: 10px 84px 10px 18px; /* 右侧为搜索图标+指示pill预留空间 */
     border: 1px solid #eee;
     border-radius: 20px;
     font-size: 14px;
@@ -947,7 +1009,7 @@ nav a.active {
 
     .search-box {
         width: 100%;
-        padding: 10px 16px;
+        padding: 10px 72px 10px 16px; /* 移动端略小的右侧留白 */
         font-size: 14px;
         border-radius: 20px;
         background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
@@ -1221,7 +1283,7 @@ nav a.active {
     }
 
     .search-box {
-        padding: 8px 14px;
+        padding: 8px 64px 8px 14px; /* 超小屏右侧留白进一步缩减 */
         font-size: 13px;
         border-radius: 18px;
         background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);

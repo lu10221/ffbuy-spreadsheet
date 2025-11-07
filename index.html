@@ -182,7 +182,12 @@
             
             // 导航到分类
             navigateToCategory(categoryName, updateHistory = true) {
-                if (this.isLoading) return;
+                if (this.isLoading) {
+                    // 取消当前加载，允许快速切换分类
+                    if (typeof productRenderer !== 'undefined' && typeof productRenderer.cancelLoad === 'function') {
+                        productRenderer.cancelLoad();
+                    }
+                }
                 
                 const category = CONFIG.UTILS.getCategoryByName(categoryName);
                 if (!category) {
@@ -203,6 +208,10 @@
                 
                 // 更新导航状态
                 this.updateNavigationState(categoryName);
+
+                // 清理任何保留的“返回当前分类”按钮
+                const backBtn = document.getElementById('back-to-results-btn');
+                if (backBtn) backBtn.remove();
                 
                 // 加载产品
                 this.loadCategoryProducts(category);

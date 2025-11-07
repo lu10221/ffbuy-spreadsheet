@@ -10,6 +10,9 @@ class ProductRenderer {
         this.intersectionObserver = null;
         this.errorRetryCount = new Map(); // 错误重试计数
         this.maxRetries = 3;
+        this.searchActive = false; // 本地搜索激活时禁用无限滚动
+        this.boundHandleScroll = null; // 保存绑定的滚动处理器，便于移除
+        this.activeLoadToken = 0; // 当前加载令牌，用于取消并发加载
     }
 
     // 初始化渲染器
@@ -24,8 +27,12 @@ class ProductRenderer {
         // 初始化图片懒加载观察器
         this.initIntersectionObserver();
         
-        // 添加滚动事件监听器
-        window.addEventListener('scroll', this.handleScroll.bind(this));
+        // 统一管理滚动事件监听器，避免重复绑定
+        if (this.boundHandleScroll) {
+            window.removeEventListener('scroll', this.boundHandleScroll);
+        }
+        this.boundHandleScroll = this.handleScroll.bind(this);
+        window.addEventListener('scroll', this.boundHandleScroll);
         return true;
     }
 
@@ -78,7 +85,7 @@ class ProductRenderer {
 
     // 加载并渲染产品
     async loadProducts(endpoint) {
-        if (this.isLoading) return;
+        const token = ++this.activeLoadToken;
         
         // 重置状态
         this.reset();
@@ -87,7 +94,12 @@ class ProductRenderer {
         this.showLoadingIndicator();
         
         try {
-            this.allProducts = await productService.fetchProducts(endpoint);
+            const fetched = await productService.fetchProducts(endpoint);
+            // 如果在请求期间切换了分类，则丢弃此次结果
+            if (token !== this.activeLoadToken) {
+                return;
+            }
+            this.allProducts = fetched;
             
             // 使产品数据全局可访问（用于产品详情功能）
             window.allProducts = this.allProducts;
@@ -104,15 +116,19 @@ class ProductRenderer {
             this.showErrorMessage(error.message);
             this.isLoading = false;
         } finally {
-            this.hideLoadingIndicator();
+            // 仅在当前令牌有效时隐藏加载指示器，防止并发加载互相干扰
+            if (token === this.activeLoadToken) {
+                this.hideLoadingIndicator();
+            }
         }
     }
 
     // 加载更多产品（分页）
     loadMoreProducts() {
-        if (this.isLoading || this.allProductsLoaded) return;
+        if (this.isLoading || this.allProductsLoaded || this.searchActive) return;
         
         this.isLoading = true;
+        const token = this.activeLoadToken;
         
         const startIndex = (this.currentPage - 1) * CONFIG.PAGINATION.PRODUCTS_PER_PAGE;
         const endIndex = Math.min(startIndex + CONFIG.PAGINATION.PRODUCTS_PER_PAGE, this.allProducts.length);
@@ -129,6 +145,12 @@ class ProductRenderer {
         
         // 模拟网络延迟（可在生产环境中移除）
         setTimeout(() => {
+            // 如果在加载过程中切换了分类或进入搜索模式，则跳过
+            if (token !== this.activeLoadToken || this.searchActive) {
+                loadingMoreIndicator.remove();
+                this.isLoading = false;
+                return;
+            }
             // 渲染当前页产品
             for (let i = startIndex; i < endIndex; i++) {
                 const productCard = this.createProductCard(this.allProducts[i], i - startIndex);
@@ -166,6 +188,10 @@ class ProductRenderer {
         const img = document.createElement('img');
         img.className = 'product-image';
         img.alt = sanitizedProduct.spbt;
+        // 提供固有尺寸以降低CLS，并启用异步解码
+        img.setAttribute('width', '400');
+        img.setAttribute('height', '500');
+        img.decoding = 'async';
         
         // 使用Intersection Observer进行懒加载
         if (this.intersectionObserver) {
@@ -344,18 +370,27 @@ class ProductRenderer {
         return icons[type] || icons.info;
     }
 
+    // 取消当前加载（令牌自增，后续响应将被丢弃）
+    cancelLoad() {
+        this.activeLoadToken++;
+        this.isLoading = false;
+    }
+
     // 内存清理
     cleanup() {
         if (this.intersectionObserver) {
             this.intersectionObserver.disconnect();
         }
-        window.removeEventListener('scroll', this.handleScroll.bind(this));
+        if (this.boundHandleScroll) {
+            window.removeEventListener('scroll', this.boundHandleScroll);
+            this.boundHandleScroll = null;
+        }
         this.errorRetryCount.clear();
     }
 
     // 处理滚动事件
     handleScroll() {
-        if (this.isLoading || this.allProductsLoaded) return;
+        if (this.isLoading || this.allProductsLoaded || this.searchActive) return;
         
         const scrollTop = window.scrollY || document.documentElement.scrollTop;
         const windowHeight = window.innerHeight;
@@ -372,6 +407,7 @@ class ProductRenderer {
         this.currentPage = 1;
         this.isLoading = false;
         this.allProductsLoaded = false;
+        this.searchActive = false;
         if (this.productsContainer) {
             this.productsContainer.innerHTML = '';
         }
