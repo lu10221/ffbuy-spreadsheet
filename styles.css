@@ -16,6 +16,10 @@ body {
     /* 为固定的logo栏添加上边距 */
 }
 
+html {
+    -webkit-text-size-adjust: 100%; /* 全局禁用iOS聚焦自动缩放 */
+}
+
 /* Mobile UI enhancements */
 :root {
     --mobile-gap: 8px;
@@ -201,11 +205,15 @@ header {
     padding: 10px 84px 10px 18px; /* 右侧为搜索图标+指示pill预留空间 */
     border: 1px solid #eee;
     border-radius: 20px;
-    font-size: 14px;
+    font-size: 16px; /* 统一为16px，避免移动端聚焦缩放 */
     background-color: #f9f9f9;
     transition: all 0.3s ease;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     outline: none;
+}
+
+.search-box::placeholder {
+    font-size: 16px;
 }
 
 .search-box:focus {
@@ -1007,7 +1015,7 @@ nav a.active {
     .search-box {
         width: 100%;
         padding: 10px 72px 10px 16px; /* 移动端略小的右侧留白 */
-        font-size: 14px;
+        font-size: 16px; /* 移动端同样保持16px，避免iOS自动放大 */
         border-radius: 20px;
         background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
         border: 1px solid rgba(255, 99, 71, 0.15);
@@ -1281,7 +1289,7 @@ nav a.active {
 
     .search-box {
         padding: 8px 64px 8px 14px; /* 超小屏右侧留白进一步缩减 */
-        font-size: 13px;
+        font-size: 16px; /* 超小屏也保持16px，防止聚焦缩放 */
         border-radius: 18px;
         background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
         border: 1px solid rgba(255, 99, 71, 0.12);
