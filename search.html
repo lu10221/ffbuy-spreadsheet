@@ -60,6 +60,33 @@
             const searchBtn = document.querySelector('.search-action');
             const wrapper = document.querySelector('.search-input-wrapper');
 
+            // 是否为移动端
+            const isMobile = (typeof window !== 'undefined' && (
+                window.matchMedia && window.matchMedia('(max-width: 768px)').matches
+            )) || (typeof navigator !== 'undefined' && /Mobi|Android/i.test(navigator.userAgent));
+
+            // 主页点击跳转带参则尝试自动聚焦并唤起键盘
+            function focusInputOnArrival() {
+                if (!searchInput) return;
+                // 提示浏览器应自动聚焦
+                searchInput.setAttribute('autofocus', 'autofocus');
+                // 去除只读防止无法输入（仅搜索页）
+                try { searchInput.removeAttribute('readonly'); searchInput.setAttribute('inputmode', 'text'); } catch (e) {}
+                // 尝试多次聚焦，提升在iOS上的成功率
+                const tryFocus = () => {
+                    searchInput.focus();
+                    try { searchInput.setSelectionRange(searchInput.value.length, searchInput.value.length); } catch (e) {}
+                };
+                tryFocus();
+                setTimeout(tryFocus, 100);
+                requestAnimationFrame(tryFocus);
+            }
+
+            const params = new URLSearchParams(window.location.search);
+            if (isMobile && (params.has('autoFocus') || params.get('autofocus') === '1')) {
+                focusInputOnArrival();
+            }
+
             function triggerSearch() {
                 const term = (searchInput.value || '').toLowerCase().trim();
                 if (term) {

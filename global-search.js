@@ -176,17 +176,25 @@ function initGlobalSearch() {
         renderPopularListFromStorage();
     } else {
         if (isMobile) {
-            // 移动端首页：点击或聚焦跳转到专用搜索页
-            searchBox.addEventListener('focus', () => {
-                window.location.href = 'search.html';
-            });
-            searchBox.addEventListener('click', () => {
-                window.location.href = 'search.html';
-            });
+            // 移动端首页：不弹出输入法，改为跳转到搜索页
+            // 禁止弹出键盘（iOS/Android）
+            try {
+                searchBox.setAttribute('readonly', 'readonly');
+                searchBox.setAttribute('inputmode', 'none');
+                searchBox.setAttribute('aria-readonly', 'true');
+            } catch (e) {}
+
+            const navigateToSearch = (e) => {
+                // 防止因默认行为产生的聚焦导致键盘闪现
+                if (e && typeof e.preventDefault === 'function') e.preventDefault();
+                window.location.href = 'search.html?autoFocus=1';
+            };
+
+            // 点击、触摸均跳转
+            searchBox.addEventListener('click', navigateToSearch);
+            searchBox.addEventListener('touchstart', navigateToSearch, { passive: true });
             if (searchIcon) {
-                searchIcon.addEventListener('click', function() {
-                    window.location.href = 'search.html';
-                });
+                searchIcon.addEventListener('click', navigateToSearch);
             }
             const searchContainer = document.querySelector('.search-container');
             if (searchContainer && !searchContainer.querySelector('.global-search-indicator')) {
