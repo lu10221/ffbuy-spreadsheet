@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search - $FFBuy SpreadSheet</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="global-search.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <!-- 核心配置与模块 -->
+    <script src="config.js"></script>
+    <script src="product-service.js"></script>
+    <script src="product-renderer.js"></script>
+    <script src="global-search.js"></script>
+</head>
+<body class="search-page">
+    <header class="mobile-search-header">
+        <div class="mobile-search-shell">
+            <button class="search-back" aria-label="Back" onclick="window.location.href='index.html'">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <div class="search-input-wrapper">
+                <i class="fas fa-search search-icon-inline" aria-hidden="true"></i>
+                <input type="text" class="search-box" placeholder="Enter product name..." aria-label="Search" />
+                <button class="search-action" aria-label="Search">
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div id="loading-indicator" style="display:none; text-align:center; padding:40px;">
+            <i class="fas fa-spinner fa-spin" style="font-size:24px; color:#666;"></i>
+            <p style="margin-top:10px; color:#666;">正在准备全局数据...</p>
+        </div>
+        <section class="popular-section">
+            <h2 class="popular-title">Popular</h2>
+            <ul class="popular-list" id="popularList">
+                <li data-term="canada goose"><i class="fas fa-chart-line"></i><span>canada goose</span><em>595 searches</em></li>
+                <li data-term="polo ralph lauren"><i class="fas fa-chart-line"></i><span>polo ralph lauren</span><em>477 searches</em></li>
+                <li data-term="essentials"><i class="fas fa-chart-line"></i><span>essentials</span><em>333 searches</em></li>
+                <li data-term="stone island"><i class="fas fa-chart-line"></i><span>stone island</span><em>312 searches</em></li>
+                <li data-term="burberry"><i class="fas fa-chart-line"></i><span>burberry</span><em>310 searches</em></li>
+                <li data-term="moncler"><i class="fas fa-chart-line"></i><span>moncler</span><em>260 searches</em></li>
+                <li data-term="balenciaga"><i class="fas fa-chart-line"></i><span>balenciaga</span><em>240 searches</em></li>
+                <li data-term="louis vuitton"><i class="fas fa-chart-line"></i><span>louis vuitton</span><em>239 searches</em></li>
+                <li data-term="ralph lauren"><i class="fas fa-chart-line"></i><span>ralph lauren</span><em>228 searches</em></li>
+                <li data-term="chrome hearts"><i class="fas fa-chart-line"></i><span>chrome hearts</span><em>203 searches</em></li>
+                <li data-term="nike"><i class="fas fa-chart-line"></i><span>nike</span><em>199 searches</em></li>
+                <li data-term="nike tech"><i class="fas fa-chart-line"></i><span>nike tech</span><em>161 searches</em></li>
+                <li data-term="hoodie"><i class="fas fa-chart-line"></i><span>hoodie</span><em>150 searches</em></li>
+                <li data-term="dior b30"><i class="fas fa-chart-line"></i><span>dior b30</span><em>147 searches</em></li>
+                <li data-term="maison margiela"><i class="fas fa-chart-line"></i><span>maison margiela</span><em>138 searches</em></li>
+            </ul>
+        </section>
+
+        <div class="products-grid" id="products-container"></div>
+    </div>
+
+    <script>
+        // 搜索页初始化：加载全局数据并绑定点击搜索
+        document.addEventListener('DOMContentLoaded', () => {
+            // 初始化渲染容器，便于统一卡片结构与懒加载
+            if (typeof productRenderer !== 'undefined') {
+                productRenderer.init('products-container');
+            }
+
+            // 初始化全局搜索脚本（将根据search-page状态采用搜索页模式）
+            if (typeof initGlobalSearch === 'function') {
+                initGlobalSearch();
+            }
+
+            const searchInput = document.querySelector('.search-box');
+            const searchBtn = document.querySelector('.search-action');
+            const wrapper = document.querySelector('.search-input-wrapper');
+
+            function triggerSearch() {
+                const term = (searchInput.value || '').toLowerCase().trim();
+                if (term) {
+                    window.location.href = `results.html?q=${encodeURIComponent(term)}`;
+                }
+            }
+
+            searchBtn.addEventListener('click', triggerSearch);
+            // 回车也触发搜索
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    triggerSearch();
+                }
+            });
+
+            // 根据输入框内容显示/隐藏搜索按钮，并调整内边距
+            function updateVisibility() {
+                const hasText = !!(searchInput.value && searchInput.value.trim());
+                if (wrapper) {
+                    wrapper.classList.toggle('has-text', hasText);
+                }
+            }
+            searchInput.addEventListener('input', updateVisibility);
+            updateVisibility(); // 初始状态
+
+            // 热门关键词点击后自动填充并搜索
+            const list = document.getElementById('popularList');
+            if (list) {
+                list.addEventListener('click', (e) => {
+                    const li = e.target.closest('li[data-term]');
+                    if (!li) return;
+                    const term = li.getAttribute('data-term');
+                    searchInput.value = term;
+                    updateVisibility();
+                    window.location.href = `results.html?q=${encodeURIComponent(term)}`;
+                    // 滚动到结果容器
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            }
+        });
+    </script>
+</body>
+</html>

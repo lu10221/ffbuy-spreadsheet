@@ -33,37 +33,77 @@ let isLoadingGlobalProducts = false;
 function initGlobalSearch() {
     const searchBox = document.querySelector('.search-box');
     const searchIcon = document.querySelector('.search-icon');
-    
-    if (!searchBox || !searchIcon) return;
-    
-    // Add event listener to search icon for global search toggle
-    searchIcon.addEventListener('click', function() {
-        toggleGlobalSearch();
-    });
-    
-    // Add event listener to search box for local search
-    searchBox.addEventListener('keyup', function() {
-        const searchTerm = this.value.toLowerCase();
-        
-        if (isGlobalSearchActive) {
-            performGlobalSearch(searchTerm);
-        } else {
-            performLocalSearch(searchTerm);
+    const isSearchPage = document.body.classList.contains('search-page');
+    const isMobile = (typeof window !== 'undefined' && (
+        window.matchMedia && window.matchMedia('(max-width: 768px)').matches
+    )) || (typeof navigator !== 'undefined' && /Mobi|Android/i.test(navigator.userAgent));
+
+    if (!searchBox) return;
+
+    if (isSearchPage) {
+        // 搜索页：不绑定首页的切换与实时搜索，改为点击按钮触发
+        // 在 search.html 中，点击按钮与回车触发已单独绑定
+
+        // 搜索页显示“Global”标识，仅作为状态提示
+        const searchContainer = document.querySelector('.search-container');
+        if (searchContainer && !searchContainer.querySelector('.global-search-indicator')) {
+            const indicator = document.createElement('div');
+            indicator.className = 'global-search-indicator active';
+            indicator.textContent = 'Global';
+            searchContainer.appendChild(indicator);
         }
-    });
-    
-    // Add global search indicator
-    const searchContainer = document.querySelector('.search-container');
-    if (searchContainer) {
-        const indicator = document.createElement('div');
-        indicator.className = 'global-search-indicator active';
-        indicator.textContent = 'Global';
-        searchContainer.appendChild(indicator);
-    }
-    
-    // If global search is active by default, load all products
-    if (isGlobalSearchActive && globalProducts.length === 0 && !isLoadingGlobalProducts) {
-        loadAllProducts();
+
+        // 预加载全局数据，提升首次搜索速度；不显示任何加载提示
+        if (isGlobalSearchActive && globalProducts.length === 0 && !isLoadingGlobalProducts) {
+            loadAllProducts();
+        }
+    } else {
+        if (isMobile) {
+            // 移动端首页：点击或聚焦跳转到专用搜索页
+            searchBox.addEventListener('focus', () => {
+                window.location.href = 'search.html';
+            });
+            searchBox.addEventListener('click', () => {
+                window.location.href = 'search.html';
+            });
+            if (searchIcon) {
+                searchIcon.addEventListener('click', function() {
+                    window.location.href = 'search.html';
+                });
+            }
+            const searchContainer = document.querySelector('.search-container');
+            if (searchContainer && !searchContainer.querySelector('.global-search-indicator')) {
+                const indicator = document.createElement('div');
+                indicator.className = 'global-search-indicator active';
+                indicator.textContent = 'Global';
+                searchContainer.appendChild(indicator);
+            }
+        } else {
+            // 桌面端首页：沿用旧版搜索（实时输入 + 图标切换全局/本地）
+            if (searchIcon) {
+                searchIcon.addEventListener('click', function() {
+                    toggleGlobalSearch();
+                });
+            }
+            searchBox.addEventListener('keyup', function() {
+                const searchTerm = this.value.toLowerCase();
+                if (isGlobalSearchActive) {
+                    performGlobalSearch(searchTerm);
+                } else {
+                    performLocalSearch(searchTerm);
+                }
+            });
+            const searchContainer = document.querySelector('.search-container');
+            if (searchContainer && !searchContainer.querySelector('.global-search-indicator')) {
+                const indicator = document.createElement('div');
+                indicator.className = 'global-search-indicator active';
+                indicator.textContent = 'Global';
+                searchContainer.appendChild(indicator);
+            }
+            if (isGlobalSearchActive && globalProducts.length === 0 && !isLoadingGlobalProducts) {
+                loadAllProducts();
+            }
+        }
     }
 }
 
@@ -112,8 +152,8 @@ function loadAllProducts() {
     // 检查是否已经有其他加载指示器
     const otherLoadingIndicator = document.querySelector('.loading-indicator');
     
-    // 只有在没有其他加载指示器的情况下才创建全局加载指示器
-    if (!otherLoadingIndicator) {
+    // 仅在首页创建全局加载指示器；搜索页与结果页不显示“Loading all products...”
+    if (!otherLoadingIndicator && !document.body.classList.contains('search-page') && !document.body.classList.contains('results-page') && productsContainer) {
         const loadingIndicator = document.createElement('div');
         loadingIndicator.className = 'global-loading-indicator';
         loadingIndicator.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading all products...';
@@ -168,7 +208,7 @@ function loadAllProducts() {
     });
     
     // Wait for all fetches to complete
-    Promise.all(fetchPromises)
+    return Promise.all(fetchPromises)
         .then(results => {
             // Combine all results and remove duplicates (based on spURL)
             const allProducts = [];
@@ -192,7 +232,10 @@ function loadAllProducts() {
             
             // If there's an active search term, perform search with loaded data
             const searchBox = document.querySelector('.search-box');
-            if (searchBox && searchBox.value.trim() !== '' && isGlobalSearchActive) {
+            const isSearchPage = document.body.classList.contains('search-page');
+            const isResultsPage = document.body.classList.contains('results-page');
+            // 首页（非搜索页/结果页）才自动渲染；搜索页仅预加载、结果页由自身脚本触发
+            if (searchBox && searchBox.value.trim() !== '' && isGlobalSearchActive && !isSearchPage && !isResultsPage) {
                 performGlobalSearch(searchBox.value.toLowerCase());
             }
         });
@@ -200,6 +243,14 @@ function loadAllProducts() {
 
 // Perform global search across all products
 function performGlobalSearch(searchTerm) {
+    // 搜索页不直接渲染结果，如被意外调用则改为跳转到结果页
+    if (document.body.classList.contains('search-page')) {
+        const term = (searchTerm || '').toLowerCase().trim();
+        if (term) {
+            window.location.href = `results.html?q=${encodeURIComponent(term)}`;
+        }
+        return;
+    }
     // 搜索期间暂停分类的无限滚动，并取消在途加载
     if (typeof productRenderer !== 'undefined') {
         productRenderer.searchActive = true;
@@ -261,24 +312,26 @@ function performGlobalSearch(searchTerm) {
             });
         }
 
-        // 在栅格外部添加“Back to Current Category”按钮，避免破坏5列布局
-        const containerWrapper = document.querySelector('.container');
-        if (containerWrapper && !document.getElementById('back-to-results-btn')) {
-            const backButton = document.createElement('button');
-            backButton.id = 'back-to-results-btn';
-            backButton.className = 'back-to-results-btn';
-            backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Current Category';
-            backButton.addEventListener('click', function() {
-                const searchBox = document.querySelector('.search-box');
-                if (searchBox) searchBox.value = '';
-                if (productsContainer.hasAttribute('data-original-content')) {
-                    productsContainer.innerHTML = productsContainer.getAttribute('data-original-content');
-                    productsContainer.removeAttribute('data-original-content');
-                }
-                backButton.remove();
-            });
-            const anchorNode = containerWrapper.querySelector('#loading-indicator') || containerWrapper.firstChild;
-            containerWrapper.insertBefore(backButton, anchorNode);
+        // 搜索页与结果页不需要“返回当前分类”按钮；仅在首页的本地搜索模式使用
+        if (!document.body.classList.contains('search-page') && !document.body.classList.contains('results-page')) {
+            const containerWrapper = document.querySelector('.container');
+            if (containerWrapper && !document.getElementById('back-to-results-btn')) {
+                const backButton = document.createElement('button');
+                backButton.id = 'back-to-results-btn';
+                backButton.className = 'back-to-results-btn';
+                backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Current Category';
+                backButton.addEventListener('click', function() {
+                    const searchBox = document.querySelector('.search-box');
+                    if (searchBox) searchBox.value = '';
+                    if (productsContainer.hasAttribute('data-original-content')) {
+                        productsContainer.innerHTML = productsContainer.getAttribute('data-original-content');
+                        productsContainer.removeAttribute('data-original-content');
+                    }
+                    backButton.remove();
+                });
+                const anchorNode = containerWrapper.querySelector('#loading-indicator') || containerWrapper.firstChild;
+                containerWrapper.insertBefore(backButton, anchorNode);
+            }
         }
         
         // 滚动到顶部，便于查看搜索结果

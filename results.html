@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results - $FFBuy SpreadSheet</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="global-search.css">
+    <link rel="stylesheet" href="product-detail-modal.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <script src="config.js"></script>
+    <script src="product-service.js"></script>
+    <script src="product-renderer.js"></script>
+    <script src="product-detail.js"></script>
+    <script src="global-search.js"></script>
+</head>
+<body class="results-page">
+    <nav class="results-topbar" role="navigation" aria-label="Top Navigation">
+        <a class="topbar-logo" href="index.html" aria-label="Go to Home">$FFBuy</a>
+        <button class="topbar-search" aria-label="Open Search" onclick="window.location.href='search.html'">
+            <i class="fas fa-search"></i>
+        </button>
+    </nav>
+    <header class="results-header">
+        <h2>Results for "<span id="queryTerm"></span>"</h2>
+        <div class="results-meta"><span id="resultsCount"></span></div>
+    </header>
+
+    <div class="container">
+        <div id="loading-indicator" style="display:none; text-align:center; padding:40px;">
+            <i class="fas fa-spinner fa-spin" style="font-size:24px; color:#666;"></i>
+            <p style="margin-top:10px; color:#666;">Loading search data...</p>
+        </div>
+        <div class="products-grid" id="products-container"></div>
+    </div>
+
+    <!-- 商品详情弹窗（与分类页保持一致） -->
+    <div class="product-detail-modal" id="productDetailModal">
+        <div class="product-detail-content">
+            <div class="product-detail-header">
+                <h2 class="product-detail-title">Product Details</h2>
+                <button class="product-detail-close" id="closeDetailModal">&times;</button>
+            </div>
+            <div class="product-detail-body" id="productDetailBody">
+                <div class="product-detail-loading">
+                    <i class="fas fa-spinner fa-spin"></i> Loading product details...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const params = new URLSearchParams(window.location.search);
+            const term = (params.get('q') || '').toLowerCase().trim();
+            document.getElementById('queryTerm').textContent = params.get('q') || '';
+
+            if (typeof productRenderer !== 'undefined') {
+                productRenderer.init('products-container');
+            }
+
+            const loader = document.getElementById('loading-indicator');
+            if (loader) loader.style.display = 'block';
+
+            try {
+                // 确保全局产品数据已加载
+                await loadAllProducts();
+                if (term && typeof performGlobalSearch === 'function') {
+                    performGlobalSearch(term);
+                }
+                // 统计数量（再次过滤一次）
+                if (Array.isArray(globalProducts)) {
+                    const count = globalProducts.filter(p => p.spbt && p.spbt.toLowerCase().includes(term)).length;
+                    const countEl = document.getElementById('resultsCount');
+                    if (countEl) countEl.textContent = `${count} results`;
+                }
+            } catch (e) {
+                console.error('Failed to load search results:', e);
+            } finally {
+                if (loader) loader.style.display = 'none';
+                window.scrollTo(0, 0);
+            }
+        });
+    </script>
+</body>
+</html>
