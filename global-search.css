@@ -201,9 +201,19 @@
     border: none;
     outline: none;
     padding: 0 14px 0 40px; /* 默认右侧较小间距，无按钮时更贴近 */
-    font-size: 15px;
+    font-size: 16px; /* iOS 聚焦输入时避免页面自动缩放 */
     color: #333;
     background: transparent;
+}
+
+/* 保持占位符字号一致，防止因占位符过小导致聚焦时缩放 */
+.search-page .search-box::placeholder {
+    font-size: 16px;
+}
+
+/* 避免 Safari 的文本尺寸自动调整影响输入框聚焦时的缩放行为 */
+.search-page {
+    -webkit-text-size-adjust: 100%;
 }
 
 .search-page .search-input-wrapper.has-text .search-box {
@@ -286,7 +296,7 @@
     padding-top: 60px; /* 为固定导航栏预留空间，避免内容被遮挡 */
 }
 .results-page .results-header {
-    padding: 16px 14px 8px;
+    padding: 25px 14px 8px;
     border-bottom: 1px solid #f0f0f0;
 }
 
