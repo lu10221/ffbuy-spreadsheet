@@ -56,6 +56,11 @@
             const term = (params.get('q') || '').toLowerCase().trim();
             document.getElementById('queryTerm').textContent = params.get('q') || '';
 
+            // 记录搜索词到本地（用于 Popular 自动统计）
+            if (term && typeof recordSearchTerm === 'function') {
+                recordSearchTerm(term);
+            }
+
             if (typeof productRenderer !== 'undefined') {
                 productRenderer.init('products-container');
             }

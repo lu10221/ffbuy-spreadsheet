@@ -41,6 +41,40 @@
 3. 访问 `http://localhost:8000/` 查看默认分类
 4. 使用URL参数切换分类：`http://localhost:8000/?category=T-Shirt`
 
+## 全站热搜（Cloudflare Workers）
+
+为了让搜索页的 Popular 列表展示“全站热搜”，本项目内置了一个 Cloudflare Workers 后端（含 KV 存储）用于记录与聚合搜索词。
+
+### 部署步骤
+
+1) 安装与准备
+- 安装 Wrangler：`npm i -g wrangler`
+- 登录 Cloudflare 账号
+
+2) 创建 KV 命名空间
+```
+cd workers/popular
+wrangler kv:namespace create POPULAR_TERMS
+wrangler kv:namespace create --preview POPULAR_TERMS
+```
+将输出的 `id` 与 `preview_id` 填入 `workers/popular/wrangler.toml` 的 `kv_namespaces` 块中。
+
+3) 部署 Workers
+```
+wrangler deploy
+```
+记下部署后的公开地址，例如：`https://ffbuy-popular.<your-subdomain>.workers.dev`
+
+4) 配置前端
+- 在 `config.js` 中设置：`CONFIG.POPULAR.BASE_URL = 'https://你的Workers地址'`
+- 前端会自动在搜索与结果页调用：
+  - `POST /events/search` 记录搜索词
+  - `GET /popular?limit=15` 获取全站热门列表
+
+5) 回退机制
+- 若 Workers 不可用或网络异常，前端会回退到浏览器 `localStorage` 的本机热搜，确保功能可用。
+
+
 ## 分类访问
 
 通过URL参数访问不同分类：

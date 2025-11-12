@@ -1,0 +1,9 @@
+name = "ffbuy-popular"
+main = "src/index.js"
+compatibility_date = "2025-01-01"
+
+# 绑定 KV 命名空间（创建后将 id/preview_id 填入）
+[[kv_namespaces]]
+binding = "POPULAR_TERMS"
+id = "<fill-in-after-create>"
+preview_id = "<fill-in-after-create>"

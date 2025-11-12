@@ -29,6 +29,120 @@ let globalProducts = [];
 let isGlobalSearchActive = true; // Default to global search
 let isLoadingGlobalProducts = false;
 
+// ------------------------------
+// Popular search term tracking (localStorage per device)
+// ------------------------------
+const POPULAR_TERMS_KEY = 'ffbuy_popular_terms';
+const POPULAR_API_BASE = (typeof CONFIG !== 'undefined' && CONFIG.POPULAR && CONFIG.POPULAR.BASE_URL)
+    ? CONFIG.POPULAR.BASE_URL
+    : '';
+
+function readPopularTerms() {
+    try {
+        const raw = localStorage.getItem(POPULAR_TERMS_KEY);
+        return raw ? JSON.parse(raw) : {};
+    } catch (e) {
+        return {};
+    }
+}
+
+function writePopularTerms(map) {
+    try {
+        localStorage.setItem(POPULAR_TERMS_KEY, JSON.stringify(map));
+    } catch (e) {
+        // ignore quota errors
+    }
+}
+
+function recordSearchTerm(term) {
+    const t = (term || '').toLowerCase().trim();
+    if (!t) return;
+    const now = Date.now();
+    const map = readPopularTerms();
+    const current = map[t] || { count: 0, lastAt: 0, display: term };
+    current.count += 1;
+    current.lastAt = now;
+    // Keep the first non-empty display text
+    if (!current.display && term) current.display = term;
+    map[t] = current;
+    writePopularTerms(map);
+
+    // 同步到后端（Cloudflare Workers），失败不影响本地记录
+    if (POPULAR_API_BASE) {
+        try {
+            fetch(`${POPULAR_API_BASE}/events/search`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ term })
+            }).catch(() => {});
+        } catch (e) {
+            // ignore network errors
+        }
+    }
+}
+
+function getPopularTerms(limit = 15) {
+    const map = readPopularTerms();
+    const arr = Object.keys(map).map(k => ({ term: k, count: map[k].count || 0, lastAt: map[k].lastAt || 0, display: map[k].display || k }));
+    arr.sort((a, b) => (b.count - a.count) || (b.lastAt - a.lastAt));
+    return arr.slice(0, limit);
+}
+
+async function renderPopularListFromStorage() {
+    const ul = document.getElementById('popularList');
+    if (!ul) return;
+    let terms = [];
+
+    // 优先尝试从后端获取全站热搜
+    if (POPULAR_API_BASE) {
+        try {
+            const url = `${POPULAR_API_BASE}/popular?limit=15`;
+            const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+            if (res.ok) {
+                const data = await res.json();
+                if (data && Array.isArray(data.terms)) {
+                    terms = data.terms.map(t => ({ term: t.term, display: t.display || t.term, count: t.count || 0 }));
+                }
+            }
+        } catch (e) {
+            // 网络失败时回退到本地统计
+        }
+    }
+
+    // 若后端不可用或返回为空：
+    // - 当已配置POPULAR_API_BASE时，不回退到本地，保持只使用全站数据
+    // - 当未配置POPULAR_API_BASE时，回退到本地统计
+    if (!terms.length && !POPULAR_API_BASE) {
+        terms = getPopularTerms(15);
+    }
+
+    // 如果仍无数据，则保留预设列表
+    if (!terms.length) return;
+
+    // 清空并以安全的 DOM API 重建
+    ul.innerHTML = '';
+    terms.forEach(t => {
+        const li = document.createElement('li');
+        li.setAttribute('data-term', t.term);
+        const icon = document.createElement('i');
+        icon.className = 'fas fa-chart-line';
+        const span = document.createElement('span');
+        span.textContent = t.display || t.term;
+        const em = document.createElement('em');
+        em.textContent = `${t.count} searches`;
+        li.appendChild(icon);
+        li.appendChild(span);
+        li.appendChild(em);
+        ul.appendChild(li);
+    });
+}
+
+// 暴露到全局，方便 search.html / results.html 调用
+if (typeof window !== 'undefined') {
+    window.recordSearchTerm = recordSearchTerm;
+    window.renderPopularListFromStorage = renderPopularListFromStorage;
+}
+
 // Function to initialize global search
 function initGlobalSearch() {
     const searchBox = document.querySelector('.search-box');
@@ -57,6 +171,9 @@ function initGlobalSearch() {
         if (isGlobalSearchActive && globalProducts.length === 0 && !isLoadingGlobalProducts) {
             loadAllProducts();
         }
+
+        // 搜索页：根据本地记录渲染 Popular 列表
+        renderPopularListFromStorage();
     } else {
         if (isMobile) {
             // 移动端首页：点击或聚焦跳转到专用搜索页

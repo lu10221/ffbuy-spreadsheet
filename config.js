@@ -31,6 +31,14 @@ const CONFIG = {
         RETRY_COUNT: 3, // 重试次数
         RETRY_DELAY: 1000 // 重试延迟(毫秒)
     },
+
+    // 全站热搜后端（Cloudflare Workers）配置
+    POPULAR: {
+        // 设置为你的 Workers 公开地址，例如：
+        // 'https://ffbuy-popular.<your-subdomain>.workers.dev'
+        // 或自定义域名：'https://popular.91link.top'
+        BASE_URL: 'https://ffbuy-popular.lu10221.workers.dev'
+    },
     
     // 分页配置
     PAGINATION: {
