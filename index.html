@@ -195,6 +195,10 @@
                     return;
                 }
                 
+                if (updateHistory && typeof gtag === 'function') {
+                    gtag('event', 'category_click', { category_name: category.name, category_display: category.displayName });
+                }
+
                 this.currentCategory = categoryName;
                 
                 // 更新URL和历史记录

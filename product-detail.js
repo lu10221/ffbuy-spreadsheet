@@ -6,7 +6,7 @@ function openProductDetail(productID, productUrl, productData) {
     const detailBody = document.getElementById('productDetailBody');
     const closeBtn = document.getElementById('closeDetailModal');
     
-    // 显示弹窗
+    window.__ffbuy_currentProduct = { id: productID || '', url: productUrl || '', title: (productData && productData.spbt) || '', category: (window.SPA && window.SPA.currentCategory) || '' };
     modal.style.display = 'block';
     document.body.style.overflow = 'hidden'; // 防止背景滚动
     
@@ -134,6 +134,16 @@ function showBasicProductDetail(productUrl, productData) {
                   </div>
         </div>
     `;
+    const agentBtns1 = detailBody.querySelectorAll('.product-detail-buy-btn');
+    agentBtns1.forEach(function(btn){
+        btn.addEventListener('click', function(){
+            var name = this.classList.contains('cnfans-btn') ? 'CNFANS' : this.classList.contains('loongbuy-btn') ? 'loongbuy' : this.classList.contains('oopbuy-btn') ? 'oopbuy' : this.classList.contains('allchinabuy-btn') ? 'allchinabuy' : this.classList.contains('mulebuy-btn') ? 'mulebuy' : this.classList.contains('kakobuy-btn') ? 'kakobuy' : (this.textContent || '').trim();
+            var ctx = window.__ffbuy_currentProduct || {};
+            if (typeof window.gtag === 'function') {
+                window.gtag('event', 'agent_click', { agent_name: name, product_id: ctx.id || '', product_title: (ctx.title || (productData && productData.spbt) || ''), product_url: (ctx.url || productUrl || ''), category: (ctx.category || (window.SPA && window.SPA.currentCategory) || '') });
+            }
+        });
+    });
 }
 
 // 渲染商品详情
@@ -264,7 +274,16 @@ function renderProductDetail(detailData, productUrl, productData) {
         </div>
     `;
     
-    // 添加缩略图点击事件
+    var agentBtns2 = detailBody.querySelectorAll('.product-detail-buy-btn');
+    agentBtns2.forEach(function(btn){
+        btn.addEventListener('click', function(){
+            var name = this.classList.contains('cnfans-btn') ? 'CNFANS' : this.classList.contains('loongbuy-btn') ? 'loongbuy' : this.classList.contains('oopbuy-btn') ? 'oopbuy' : this.classList.contains('allchinabuy-btn') ? 'allchinabuy' : this.classList.contains('mulebuy-btn') ? 'mulebuy' : this.classList.contains('kakobuy-btn') ? 'kakobuy' : (this.textContent || '').trim();
+            var ctx = window.__ffbuy_currentProduct || {};
+            if (typeof window.gtag === 'function') {
+                window.gtag('event', 'agent_click', { agent_name: name, product_id: ctx.id || '', product_title: (ctx.title || (productData && productData.spbt) || ''), product_url: (ctx.url || productUrl || ''), category: (ctx.category || (window.SPA && window.SPA.currentCategory) || '') });
+            }
+        });
+    });
     const thumbnails = detailBody.querySelectorAll('.product-detail-thumbnail');
     const mainImage = document.getElementById('mainDetailImage');
     const thumbnailsContainer = detailBody.querySelector('.product-detail-thumbnails');
@@ -352,6 +371,36 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // 开始观察
         observer.observe(productsContainer, config);
+
+        productsContainer.addEventListener('click', function(e){
+            var card = e.target.closest('.product-card');
+            if (!card) return;
+            var isBuy = e.target.closest('.product-detail-buy-btn');
+            if (isBuy) return;
+            var linkEl = card.querySelector('a');
+            if (linkEl) { e.preventDefault(); e.stopPropagation(); }
+            if (!card.dataset.hasClickEvent) { bindProductCardClickEvent(card); }
+            var pid = card.dataset.productId || '';
+            var purl = card.dataset.productUrl || (linkEl ? linkEl.href : '');
+            var titleEl = card.querySelector('.product-title');
+            var imageEl = card.querySelector('.product-image');
+            var priceEl = card.querySelector('.us-price');
+            var data = { spbt: titleEl ? titleEl.textContent : '', ztURL: imageEl ? imageEl.src : '', US: priceEl ? priceEl.textContent : '' };
+            if (window.allProducts && Array.isArray(window.allProducts) && data.spbt) {
+                var full = window.allProducts.find(function(p){ return p.spbt === data.spbt; });
+                if (full) {
+                    if (full.loongbuy) data.loongbuy = full.loongbuy;
+                    if (full.oopbuy) data.oopbuy = full.oopbuy;
+                    if (full.allchinabuy) data.allchinabuy = full.allchinabuy;
+                    if (full.mulebuy) data.mulebuy = full.mulebuy;
+                    if (full.kakobuy) data.kakobuy = full.kakobuy;
+                }
+            }
+            if (typeof window.gtag === 'function') {
+                window.gtag('event', 'product_click', { product_id: pid, product_title: data.spbt, product_url: purl, category: (window.SPA && window.SPA.currentCategory) || '' });
+            }
+            openProductDetail(pid, purl, data);
+        });
     }
 });
 
@@ -436,6 +485,11 @@ function bindProductCardClickEvent(productCard) {
         const clickedElement = event.target.tagName === 'A' ? event.target : event.target.closest('a');
         if (clickedElement && !clickedElement.classList.contains('product-detail-buy-btn')) {
             event.preventDefault();
+        }
+        var pid = productCard.dataset.productId || '';
+        var purl = productCard.dataset.productUrl || '';
+        if (typeof window.gtag === 'function') {
+            window.gtag('event', 'product_click', { product_id: pid, product_title: productData.spbt, product_url: purl, category: (window.SPA && window.SPA.currentCategory) || '' });
         }
         openProductDetail(this.dataset.productId, this.dataset.productUrl, productData);
     });

@@ -1,17 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-DZ3110PTYG"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-DZ3110PTYG');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search - $FFBuy SpreadSheet</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="global-search.css">
+    <link rel="stylesheet" href="product-detail-modal.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
     <!-- 核心配置与模块 -->
     <script src="config.js"></script>
     <script src="product-service.js"></script>
     <script src="product-renderer.js"></script>
+    <script src="product-detail.js"></script>
     <script src="global-search.js"></script>
 </head>
 <body class="search-page">
@@ -41,6 +48,20 @@
         </section>
 
         <div class="products-grid" id="products-container"></div>
+    </div>
+
+    <div class="product-detail-modal" id="productDetailModal">
+        <div class="product-detail-content">
+            <div class="product-detail-header">
+                <h2 class="product-detail-title">Product Details</h2>
+                <button class="product-detail-close" id="closeDetailModal">&times;</button>
+            </div>
+            <div class="product-detail-body" id="productDetailBody">
+                <div class="product-detail-loading">
+                    <i class="fas fa-spinner fa-spin"></i> Loading product details...
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
