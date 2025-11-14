@@ -142,8 +142,8 @@ function showBasicProductDetail(productUrl, productData) {
             e.stopPropagation();
             var name = this.classList.contains('cnfans-btn') ? 'CNFANS' : this.classList.contains('loongbuy-btn') ? 'loongbuy' : this.classList.contains('oopbuy-btn') ? 'oopbuy' : this.classList.contains('allchinabuy-btn') ? 'allchinabuy' : this.classList.contains('mulebuy-btn') ? 'mulebuy' : this.classList.contains('kakobuy-btn') ? 'kakobuy' : (this.textContent || '').trim();
             var ctx = window.__ffbuy_currentProduct || {};
-            if (typeof gtag === 'function') {
-                gtag('event', 'agent_click', { agent_name: name, product_id: ctx.id || '', product_title: (ctx.title || (productData && productData.spbt) || ''), product_url: (ctx.url || productUrl || ''), category: (ctx.category || (window.SPA && window.SPA.currentCategory) || ''), event_callback: function(){ try { if (href) window.open(href, '_blank'); } catch (err) { if (href) location.href = href; } } });
+            if (typeof window.gtag === 'function') {
+                window.gtag('event', 'agent_click', { agent_name: name, product_id: ctx.id || '', product_title: (ctx.title || (productData && productData.spbt) || ''), product_url: (ctx.url || productUrl || ''), category: (ctx.category || (window.SPA && window.SPA.currentCategory) || ''), event_callback: function(){ try { if (href) window.open(href, '_blank'); } catch (err) { if (href) location.href = href; } } });
             } else {
                 if (href) window.open(href, '_blank');
             }
@@ -287,8 +287,8 @@ function renderProductDetail(detailData, productUrl, productData) {
             e.stopPropagation();
             var name = this.classList.contains('cnfans-btn') ? 'CNFANS' : this.classList.contains('loongbuy-btn') ? 'loongbuy' : this.classList.contains('oopbuy-btn') ? 'oopbuy' : this.classList.contains('allchinabuy-btn') ? 'allchinabuy' : this.classList.contains('mulebuy-btn') ? 'mulebuy' : this.classList.contains('kakobuy-btn') ? 'kakobuy' : (this.textContent || '').trim();
             var ctx = window.__ffbuy_currentProduct || {};
-            if (typeof gtag === 'function') {
-                gtag('event', 'agent_click', { agent_name: name, product_id: ctx.id || '', product_title: (ctx.title || (productData && productData.spbt) || ''), product_url: (ctx.url || productUrl || ''), category: (ctx.category || (window.SPA && window.SPA.currentCategory) || ''), event_callback: function(){ try { if (href) window.open(href, '_blank'); } catch (err) { if (href) location.href = href; } } });
+            if (typeof window.gtag === 'function') {
+                window.gtag('event', 'agent_click', { agent_name: name, product_id: ctx.id || '', product_title: (ctx.title || (productData && productData.spbt) || ''), product_url: (ctx.url || productUrl || ''), category: (ctx.category || (window.SPA && window.SPA.currentCategory) || ''), event_callback: function(){ try { if (href) window.open(href, '_blank'); } catch (err) { if (href) location.href = href; } } });
             } else {
                 if (href) window.open(href, '_blank');
             }
@@ -406,8 +406,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (full.kakobuy) data.kakobuy = full.kakobuy;
                 }
             }
-            if (typeof window.gtag === 'function') {
-                window.gtag('event', 'product_click', { product_id: pid, product_title: data.spbt, product_url: purl, category: (window.SPA && window.SPA.currentCategory) || '' });
+            if (!card.dataset.hasClickEvent) {
+                if (typeof window.gtag === 'function') {
+                    window.gtag('event', 'product_click', { product_id: pid, product_title: data.spbt, product_url: purl, category: (window.SPA && window.SPA.currentCategory) || '' });
+                }
             }
             openProductDetail(pid, purl, data);
         });
@@ -498,8 +500,8 @@ function bindProductCardClickEvent(productCard) {
         }
         var pid = productCard.dataset.productId || '';
         var purl = productCard.dataset.productUrl || '';
-        if (typeof gtag === 'function') {
-            gtag('event', 'product_click', { product_id: pid, product_title: productData.spbt, product_url: purl, category: (window.SPA && window.SPA.currentCategory) || '' });
+        if (typeof window.gtag === 'function') {
+            window.gtag('event', 'product_click', { product_id: pid, product_title: productData.spbt, product_url: purl, category: (window.SPA && window.SPA.currentCategory) || '' });
         }
         openProductDetail(this.dataset.productId, this.dataset.productUrl, productData);
     });
