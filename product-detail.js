@@ -278,26 +278,19 @@ function renderProductDetail(detailData, productUrl, productData) {
     let imagesHtml = '';
     let thumbnailsHtml = '';
     
-    // 使用API返回的productImgList字段或备用图片
     let images = [];
-    
-    // 按照优先级检查各种可能的图片来源
-    if (data.productImgList && data.productImgList.length > 0) {
-        // 首先检查直接的productImgList字段
-        images = data.productImgList;
-    }
-    else if (data.productDetail && data.productDetail.productImgList && data.productDetail.productImgList.length > 0) {
-        // 然后检查productDetail.productImgList字段
-        images = data.productDetail.productImgList;
-    }
-    else if (data.images && data.images.length > 0) {
-        // 再检查images字段
+    if (data.productInfo && Array.isArray(data.productInfo.imgList) && data.productInfo.imgList.length > 0) {
+        images = data.productInfo.imgList;
+    } else if (data.imgList && data.imgList.length > 0) {
+        images = data.imgList;
+    } else if (data.productDetail && Array.isArray(data.productDetail.imgList) && data.productDetail.imgList.length > 0) {
+        images = data.productDetail.imgList;
+    } else if (data.images && data.images.length > 0) {
         images = data.images;
-    }
-    else {
-        // 如果都没有，使用商品卡片的图片
+    } else {
         images = [productData.ztURL];
     }
+    images = images.map(function(u){ return String(u).trim().replace(/`/g, ''); });
     
     // 生成主图和缩略图HTML
     if (images && images.length > 0) {
