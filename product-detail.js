@@ -397,7 +397,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (isBuy) return;
             var linkEl = card.querySelector('a');
             if (linkEl) { e.preventDefault(); e.stopPropagation(); }
-            if (!card.dataset.hasClickEvent) { bindProductCardClickEvent(card); }
+            var wasBound = !!card.dataset.hasClickEvent;
+            if (!wasBound) { bindProductCardClickEvent(card); }
             var pid = card.dataset.productId || '';
             var purl = card.dataset.productUrl || (linkEl ? linkEl.href : '');
             var titleEl = card.querySelector('.product-title');
@@ -414,7 +415,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (full.kakobuy) data.kakobuy = full.kakobuy;
                 }
             }
-            if (!card.dataset.hasClickEvent) {
+            if (!wasBound) {
                 gaSendEvent('product_click', { product_id: pid, product_title: data.spbt, product_url: purl, category: (window.SPA && window.SPA.currentCategory) || '' });
             }
             openProductDetail(pid, purl, data);
