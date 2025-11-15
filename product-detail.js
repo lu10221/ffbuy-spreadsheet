@@ -156,7 +156,7 @@ function showBasicProductDetail(productUrl, productData) {
             e.stopPropagation();
             var name = this.classList.contains('cnfans-btn') ? 'CNFANS' : this.classList.contains('loongbuy-btn') ? 'loongbuy' : this.classList.contains('oopbuy-btn') ? 'oopbuy' : this.classList.contains('allchinabuy-btn') ? 'allchinabuy' : this.classList.contains('mulebuy-btn') ? 'mulebuy' : this.classList.contains('kakobuy-btn') ? 'kakobuy' : (this.textContent || '').trim();
             var ctx = window.__ffbuy_currentProduct || {};
-            var ok = gaSendEvent('agent_click', { agent_name: name, product_id: ctx.id || '', product_title: (ctx.title || (productData && productData.spbt) || ''), product_url: (ctx.url || productUrl || ''), category: (ctx.category || (window.SPA && window.SPA.currentCategory) || ''), event_callback: function(){ try { if (href) window.open(href, '_blank'); } catch (err) { if (href) location.href = href; } } });
+            var ok = gaSendEvent('agent_click', { agent_name: name, product_id: ctx.id || '', product_title: (ctx.title || (productData && productData.spbt) || ''), product_name: (ctx.title || (productData && productData.spbt) || ''), product_url: (ctx.url || productUrl || ''), category: (ctx.category || (window.SPA && window.SPA.currentCategory) || ''), event_callback: function(){ try { if (href) window.open(href, '_blank'); } catch (err) { if (href) location.href = href; } } });
             if (!ok && href) window.open(href, '_blank');
         });
     });
@@ -298,7 +298,7 @@ function renderProductDetail(detailData, productUrl, productData) {
             e.stopPropagation();
             var name = this.classList.contains('cnfans-btn') ? 'CNFANS' : this.classList.contains('loongbuy-btn') ? 'loongbuy' : this.classList.contains('oopbuy-btn') ? 'oopbuy' : this.classList.contains('allchinabuy-btn') ? 'allchinabuy' : this.classList.contains('mulebuy-btn') ? 'mulebuy' : this.classList.contains('kakobuy-btn') ? 'kakobuy' : (this.textContent || '').trim();
             var ctx = window.__ffbuy_currentProduct || {};
-            var ok = gaSendEvent('agent_click', { agent_name: name, product_id: ctx.id || '', product_title: (ctx.title || (productData && productData.spbt) || ''), product_url: (ctx.url || productUrl || ''), category: (ctx.category || (window.SPA && window.SPA.currentCategory) || ''), event_callback: function(){ try { if (href) window.open(href, '_blank'); } catch (err) { if (href) location.href = href; } } });
+            var ok = gaSendEvent('agent_click', { agent_name: name, product_id: ctx.id || '', product_title: (ctx.title || (productData && productData.spbt) || ''), product_name: (ctx.title || (productData && productData.spbt) || ''), product_url: (ctx.url || productUrl || ''), category: (ctx.category || (window.SPA && window.SPA.currentCategory) || ''), event_callback: function(){ try { if (href) window.open(href, '_blank'); } catch (err) { if (href) location.href = href; } } });
             if (!ok && href) window.open(href, '_blank');
         });
     });
@@ -395,12 +395,12 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!card) return;
             var isBuy = e.target.closest('.product-detail-buy-btn');
             if (isBuy) return;
-            var linkEl = card.querySelector('a');
-            if (linkEl) { e.preventDefault(); e.stopPropagation(); }
             var wasBound = !!card.dataset.hasClickEvent;
+            var clickedLink = e.target.closest('a');
+            if (!wasBound && clickedLink) { e.preventDefault(); e.stopPropagation(); }
             if (!wasBound) { bindProductCardClickEvent(card); }
             var pid = card.dataset.productId || '';
-            var purl = card.dataset.productUrl || (linkEl ? linkEl.href : '');
+            var purl = card.dataset.productUrl || (clickedLink ? clickedLink.href : '');
             var titleEl = card.querySelector('.product-title');
             var imageEl = card.querySelector('.product-image');
             var priceEl = card.querySelector('.us-price');
@@ -416,9 +416,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             if (!wasBound) {
-                gaSendEvent('product_click', { product_id: pid, product_title: data.spbt, product_url: purl, category: (window.SPA && window.SPA.currentCategory) || '' });
+                gaSendEvent('product_click', { product_id: pid, product_title: data.spbt, product_name: data.spbt, product_url: purl, category: (window.SPA && window.SPA.currentCategory) || '' });
+                openProductDetail(pid, purl, data);
+                return;
             }
-            openProductDetail(pid, purl, data);
+            // 已绑定，交由卡片自己的监听处理
         });
     }
 });
@@ -507,7 +509,7 @@ function bindProductCardClickEvent(productCard) {
         }
         var pid = productCard.dataset.productId || '';
         var purl = productCard.dataset.productUrl || '';
-        gaSendEvent('product_click', { product_id: pid, product_title: productData.spbt, product_url: purl, category: (window.SPA && window.SPA.currentCategory) || '' });
+        gaSendEvent('product_click', { product_id: pid, product_title: productData.spbt, product_name: productData.spbt, product_url: purl, category: (window.SPA && window.SPA.currentCategory) || '' });
         openProductDetail(this.dataset.productId, this.dataset.productUrl, productData);
     });
     
@@ -518,7 +520,10 @@ function bindProductCardClickEvent(productCard) {
             linkElement.addEventListener('click', function(event) {
                 event.preventDefault();
                 event.stopPropagation();
-                openProductDetail(productCard.dataset.productId, productCard.dataset.productUrl, productData);
+                var pid = productCard.dataset.productId || '';
+                var purl = productCard.dataset.productUrl || '';
+                gaSendEvent('product_click', { product_id: pid, product_title: productData.spbt, product_name: productData.spbt, product_url: purl, category: (window.SPA && window.SPA.currentCategory) || '' });
+                openProductDetail(pid, purl, productData);
             });
         });
     }
