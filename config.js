@@ -63,7 +63,8 @@ const CONFIG = {
     
     // Google Analytics配置
     ANALYTICS: {
-        TRACKING_ID: 'G-DZ3110PTYG'
+        TRACKING_ID: 'G-DZ3110PTYG',
+        CF_ENDPOINT: 'https://ga4.lu10221.workers.dev/collect'
     },
     
     // 支付方式配置
