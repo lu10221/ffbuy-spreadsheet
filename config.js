@@ -37,7 +37,7 @@ const CONFIG = {
         // 设置为你的 Workers 公开地址，例如：
         // 'https://ffbuy-popular.<your-subdomain>.workers.dev'
         // 或自定义域名：'https://popular.91link.top'
-        BASE_URL: 'https://ffbuy-popular.lu10221.workers.dev'
+        BASE_URL: 'https://webga4.lu10221.workers.dev'
     },
     
     // 分页配置
@@ -64,7 +64,7 @@ const CONFIG = {
     // Google Analytics配置
     ANALYTICS: {
         TRACKING_ID: 'G-DZ3110PTYG',
-        CF_ENDPOINT: 'https://ga4.lu10221.workers.dev/collect'
+        CF_ENDPOINT: 'https://webga4.lu10221.workers.dev/collect'
     },
     
     // 支付方式配置
