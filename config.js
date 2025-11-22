@@ -4,7 +4,7 @@ const CONFIG = {
     SITE: {
         NAME: '$FFBuy SpreadSheet',
         LOGO_TEXT: '$FFBuy SpreadSheet',
-        DEFAULT_CATEGORY: 'Shoes', // 默认跳转的分类
+        DEFAULT_CATEGORY: 'Hot', // 默认跳转的分类
         // 获取默认分类对象
         get defaultCategory() {
             return CONFIG.categories.find(c => c.name === this.DEFAULT_CATEGORY);
@@ -77,6 +77,12 @@ const CONFIG = {
     
     // 分类配置 - 统一管理所有分类信息 (SPA架构)
     categories: [
+        { 
+            name: 'Hot', 
+            endpoint: 'Hot', 
+            icon: 'fas fa-fire',
+            displayName: 'Hot'
+        },
         { 
             name: 'Shirts', 
             endpoint: 'Shirts', 
