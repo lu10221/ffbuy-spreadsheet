@@ -20,9 +20,6 @@ export default {
       if (url.pathname === '/popular' && method === 'GET') {
         return await handlePopular(request, env, url);
       }
-      if (url.pathname === '/proxy' && method === 'GET') {
-        return await handleProxy(url);
-      }
       return json({ error: 'Not found' }, 404);
     } catch (e) {
       return json({ error: 'Server error', detail: String(e) }, 500);
@@ -90,16 +87,4 @@ function clampInt(val, def, min, max) {
   const n = parseInt(val, 10);
   if (Number.isNaN(n)) return def;
   return Math.max(min, Math.min(max, n));
-}
-async function handleProxy(url) {
-  const target = url.searchParams.get('url');
-  if (!target) return json({ error: 'url_required' }, 400);
-  try {
-    const res = await fetch(target);
-    const contentType = res.headers.get('content-type') || 'application/json';
-    const text = await res.text();
-    return new Response(text, { status: res.status, headers: { 'content-type': contentType, ...corsHeaders() } });
-  } catch (e) {
-    return json({ error: 'proxy_failed', detail: String(e) }, 502);
-  }
 }

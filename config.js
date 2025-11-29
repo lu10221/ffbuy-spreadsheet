@@ -29,10 +29,7 @@ const CONFIG = {
         BASE_URL: 'https://opensheet.elk.sh/1GEMNqUmGYTSH4oEpcqbIQYWQfihefyB0GeeANSxsucw',
         TIMEOUT: 10000, // 10秒超时
         RETRY_COUNT: 3, // 重试次数
-        RETRY_DELAY: 1000, // 重试延迟(毫秒)
-        // CORS 代理（用于跨域获取第三方JSON）
-        CORS_PROXY_RAW: 'https://api.allorigins.win/raw?url=',
-        CORS_PROXY_JSON: 'https://webga4.lu10221.workers.dev/proxy?url='
+        RETRY_DELAY: 1000 // 重试延迟(毫秒)
     },
 
     // 全站热搜后端（Cloudflare Workers）配置
