@@ -166,6 +166,83 @@ function closeProductDetail() {
 }
 
 // 获取商品详情
+function fetchWeidianSkuImages(itemId) {
+    try {
+        if (!itemId) return Promise.resolve([]);
+        var base = 'https://thor.weidian.com/detail/getItemSkuInfo/1.0?param=' + encodeURIComponent(JSON.stringify({ itemId: String(itemId) }));
+        function tryChain() {
+            var chain = [];
+            chain.push({ u: base });
+            var proxJson = (window.CONFIG && CONFIG.API && CONFIG.API.CORS_PROXY_JSON) ? CONFIG.API.CORS_PROXY_JSON : '';
+            var proxRaw = (window.CONFIG && CONFIG.API && CONFIG.API.CORS_PROXY_RAW) ? CONFIG.API.CORS_PROXY_RAW : '';
+            if (proxJson) chain.push({ u: proxJson + encodeURIComponent(base) });
+            if (proxRaw) chain.push({ u: proxRaw + encodeURIComponent(base) });
+            chain.push({ u: 'https://thingproxy.freeboard.io/fetch/' + encodeURIComponent(base) });
+            chain.push({ u: 'https://cors.isomorphic-git.org/' + base });
+            var i = 0;
+            function next() {
+                if (i >= chain.length) return Promise.resolve(null);
+                var target = chain[i++].u;
+                return fetch(target).then(function(r){ if (!r || !r.ok) return next(); return r.text(); }).then(function(txt){ if (!txt) return next(); try { return JSON.parse(txt); } catch (e) { return next(); } }).catch(function(){ return next(); });
+            }
+            return next();
+        }
+        return tryChain()
+          .then(function(json){
+            var imgs = [];
+            if (json && json.result && Array.isArray(json.result.attrList)) {
+                json.result.attrList.forEach(function(attr){
+                    if (attr && Array.isArray(attr.attrValues)) {
+                        attr.attrValues.forEach(function(v){
+                            var im = v && (v.img || v.image || v.imgUrl || v.thumb);
+                            if (im) imgs.push(String(im).trim());
+                        });
+                    }
+                });
+            }
+            // 额外解析 skuInfos -> skuInfo.img
+            if (json && json.result && Array.isArray(json.result.skuInfos)) {
+                json.result.skuInfos.forEach(function(s){
+                    var im = s && s.skuInfo && s.skuInfo.img;
+                    if (im) imgs.push(String(im).trim());
+                });
+            }
+            // 主图兜底
+            if (json && json.result && json.result.itemMainPic) {
+                imgs.push(String(json.result.itemMainPic).trim());
+            }
+            var seen = {};
+            imgs = imgs.filter(function(u){ if (!u) return false; if (seen[u]) return false; seen[u] = true; return true; });
+            return imgs;
+        }).catch(function(){ clearTimeout(t); return []; });
+    } catch (e) { return Promise.resolve([]); }
+}
+
+function fetchWeidianDetail(itemId) {
+    try {
+        if (!itemId) return Promise.resolve(null);
+        var base = 'https://thor.weidian.com/detail/getItemSkuInfo/1.0?param=' + encodeURIComponent(JSON.stringify({ itemId: String(itemId) }));
+        function tryChain() {
+            var chain = [];
+            chain.push({ u: base });
+            var proxJson = (window.CONFIG && CONFIG.API && CONFIG.API.CORS_PROXY_JSON) ? CONFIG.API.CORS_PROXY_JSON : '';
+            var proxRaw = (window.CONFIG && CONFIG.API && CONFIG.API.CORS_PROXY_RAW) ? CONFIG.API.CORS_PROXY_RAW : '';
+            if (proxJson) chain.push({ u: proxJson + encodeURIComponent(base) });
+            if (proxRaw) chain.push({ u: proxRaw + encodeURIComponent(base) });
+            chain.push({ u: 'https://thingproxy.freeboard.io/fetch/' + encodeURIComponent(base) });
+            chain.push({ u: 'https://cors.isomorphic-git.org/' + base });
+            var i = 0;
+            function next() {
+                if (i >= chain.length) return Promise.resolve(null);
+                var target = chain[i++].u;
+                return fetch(target).then(function(r){ if (!r || !r.ok) return next(); return r.text(); }).then(function(txt){ if (!txt) return next(); try { return JSON.parse(txt); } catch (e) { return next(); } }).catch(function(){ return next(); });
+            }
+            return next();
+        }
+        return tryChain();
+    } catch (e) { return Promise.resolve(null); }
+}
+
 function fetchProductDetail(productID, productUrl, productData) {
     const detailBody = document.getElementById('productDetailBody');
     if (!productID || productID.trim() === '') {
@@ -173,16 +250,12 @@ function fetchProductDetail(productID, productUrl, productData) {
         return;
     }
     const timeoutMs = (window.CONFIG && CONFIG.API && CONFIG.API.TIMEOUT) || 10000;
-    const endpoints = [
-        'https://m.cnfans.com/search-api/detail/product-info',
-        'https://cnfans.com/search-api/detail/product-info'
-    ];
     if (!window.__ffbuy_detailCache) window.__ffbuy_detailCache = {};
     if (!window.__ffbuy_detailInflight) window.__ffbuy_detailInflight = {};
     const cacheKey = productID;
     const cached = window.__ffbuy_detailCache[cacheKey];
     if (cached) {
-        renderProductDetail(cached, productUrl, productData);
+        renderProductDetail(cached, productUrl, productData, cached.data && cached.data.images);
         return;
     }
     if (window.__ffbuy_detailInflight[cacheKey]) {
@@ -192,21 +265,25 @@ function fetchProductDetail(productID, productUrl, productData) {
         return;
     }
     const doFetch = async () => {
-        for (let i = 0; i < endpoints.length; i++) {
-            const base = endpoints[i];
-            const url = `${base}?platform=WEIDIAN&productID=${productID}&forceReload=false&site=cnfans&lang=zh&wmc-currency=USD`;
-            try {
-                const controller = new AbortController();
-                const t = setTimeout(() => controller.abort(), timeoutMs);
-                const res = await fetch(url, { signal: controller.signal });
-                clearTimeout(t);
-                if (res && res.ok) {
-                    const json = await res.json();
-                    return json;
+        const json = await fetchWeidianDetail(productID);
+        if (!json || !json.result) return null;
+        const result = json.result;
+        const imgs = [];
+        if (Array.isArray(result.attrList)) {
+            result.attrList.forEach(function(attr){
+                if (Array.isArray(attr.attrValues)) {
+                    attr.attrValues.forEach(function(v){ if (v && v.img) imgs.push(String(v.img).trim()); });
                 }
-            } catch (e) {}
+            });
         }
-        return null;
+        if (Array.isArray(result.skuInfos)) {
+            result.skuInfos.forEach(function(s){ var im = s && s.skuInfo && s.skuInfo.img; if (im) imgs.push(String(im).trim()); });
+        }
+        if (result.itemMainPic) imgs.push(String(result.itemMainPic).trim());
+        const seen = {}; const images = imgs.filter(function(u){ if (!u) return false; if (seen[u]) return false; seen[u] = true; return true; });
+        const attributes = Array.isArray(result.attrList) ? result.attrList.map(function(a){ return { name: a.attrTitle, value: (Array.isArray(a.attrValues) ? a.attrValues.map(function(v){ return v.attrValue; }).join(' / ') : '') }; }) : [];
+        const data = { title: result.itemTitle || (productData && productData.spbt) || '', images: images, attributes: attributes, price: (productData && productData.US) || '' };
+        return { data: data };
     };
     const p = doFetch();
     window.__ffbuy_detailInflight[cacheKey] = p;
@@ -214,7 +291,7 @@ function fetchProductDetail(productID, productUrl, productData) {
         delete window.__ffbuy_detailInflight[cacheKey];
         if (data) {
             window.__ffbuy_detailCache[cacheKey] = data;
-            renderProductDetail(data, productUrl, productData);
+            renderProductDetail(data, productUrl, productData, data.data && data.data.images);
         } else {
             showBasicProductDetail(productUrl, productData);
         }
@@ -285,6 +362,30 @@ function showBasicProductDetail(productUrl, productData) {
               </div>
         </div>
     `;
+    // 异步加载 Weidian 图片并替换主图/追加缩略图
+    try {
+        var ctx = window.__ffbuy_currentProduct || {};
+        var pid = ctx.id || '';
+        if (pid) {
+            fetchWeidianSkuImages(pid).then(function(imgs){
+                if (Array.isArray(imgs) && imgs.length > 0) {
+                    var imgBox = detailBody.querySelector('.product-detail-images');
+                    if (imgBox) {
+                        imgBox.innerHTML = `<img src="${imgs[0]}" class="product-detail-main-image" alt="${productData.spbt}" id="mainDetailImage">` +
+                          (imgs.length > 1 ? ('<div class="product-detail-thumbnails">' + imgs.map(function(u, i){ return `<img src="${u}" class="product-detail-thumbnail ${i===0?'active':''}" alt="Thumbnail ${i+1}">`; }).join('') + '</div>') : '');
+                        // 缩略图切换事件
+                        var main = imgBox.querySelector('#mainDetailImage');
+                        var thumbs = imgBox.querySelectorAll('.product-detail-thumbnail');
+                        thumbs.forEach(function(t){ t.addEventListener('click', function(){
+                            thumbs.forEach(function(x){ x.classList.remove('active'); });
+                            t.classList.add('active');
+                            if (main) main.src = t.src;
+                        }); });
+                    }
+                }
+            }).catch(function(){});
+        }
+    } catch (e) {}
     const agentBtns1 = detailBody.querySelectorAll('.product-detail-buy-btn');
     agentBtns1.forEach(function(btn){
         btn.addEventListener('click', function(e){
@@ -304,7 +405,7 @@ function showBasicProductDetail(productUrl, productData) {
 }
 
 // 渲染商品详情
-function renderProductDetail(detailData, productUrl, productData) {
+function renderProductDetail(detailData, productUrl, productData, extraImages) {
     const detailBody = document.getElementById('productDetailBody');
     
     // 如果API返回了错误或没有数据
@@ -320,6 +421,7 @@ function renderProductDetail(detailData, productUrl, productData) {
     let thumbnailsHtml = '';
     
     let images = [];
+    let weidianImages = Array.isArray(extraImages) ? extraImages : [];
     if (data.productInfo && Array.isArray(data.productInfo.imgList) && data.productInfo.imgList.length > 0) {
         images = data.productInfo.imgList;
     } else if (data.imgList && data.imgList.length > 0) {
@@ -330,6 +432,9 @@ function renderProductDetail(detailData, productUrl, productData) {
         images = data.images;
     } else {
         images = [productData.ztURL];
+    }
+    if (weidianImages && weidianImages.length > 0) {
+        images = weidianImages;
     }
     images = images.map(function(u){ return String(u).trim().replace(/`/g, ''); });
     
