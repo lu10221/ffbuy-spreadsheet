@@ -243,8 +243,9 @@ function showBasicProductDetail(productUrl, productData) {
                     <div class="agent-top">
                         <a href="${productUrl}" target="_blank" class="product-detail-buy-btn lovegobuy-btn cnfans-btn" onclick="event.stopPropagation();">
                             <img src="img/cnfans.webp" alt="CNFANS" class="btn-icon">
-                            <span class="agent-texts">
+                        <span class="agent-texts">
                                 <span class="agent-name">CNFans</span>
+                                <span class="agent-offer-inline">10% OFF + Free Items</span>
                             </span>
                         </a>
                     </div>
@@ -397,6 +398,7 @@ function renderProductDetail(detailData, productUrl, productData) {
                         <img src="img/cnfans.webp" alt="CNFANS" class="btn-icon">
                         <span class="agent-texts">
                             <span class="agent-name">CNFans</span>
+                            <span class="agent-offer-inline">10% OFF + Free Items</span>
                         </span>
                     </a>
                 </div>
