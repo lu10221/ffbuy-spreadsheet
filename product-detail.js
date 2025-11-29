@@ -166,86 +166,74 @@ function closeProductDetail() {
 }
 
 // 获取商品详情
-function fetchWeidianSkuImages(itemId) {
-    try {
-        if (!itemId) return Promise.resolve([]);
-        var url = 'https://thor.weidian.com/detail/getItemSkuInfo/1.0?param=' + encodeURIComponent(JSON.stringify({ itemId: String(itemId) }));
-        var controller = new AbortController();
-        var t = setTimeout(function(){ controller.abort(); }, 10000);
-        return fetch(url, { signal: controller.signal }).then(function(res){ clearTimeout(t); if (!res || !res.ok) return []; return res.json(); }).then(function(json){
-            var imgs = [];
-            if (json && json.result && Array.isArray(json.result.attrList)) {
-                json.result.attrList.forEach(function(attr){
-                    if (attr && Array.isArray(attr.attrValues)) {
-                        attr.attrValues.forEach(function(v){
-                            var im = v && (v.img || v.image || v.imgUrl || v.thumb);
-                            if (im) imgs.push(String(im).trim());
-                        });
-                    }
-                });
-            }
-            var seen = {};
-            imgs = imgs.filter(function(u){ if (!u) return false; if (seen[u]) return false; seen[u] = true; return true; });
-            return imgs;
-        }).catch(function(){ clearTimeout(t); return []; });
-    } catch (e) { return Promise.resolve([]); }
-}
-
 function fetchProductDetail(productID, productUrl, productData) {
     const detailBody = document.getElementById('productDetailBody');
     if (!productID || productID.trim() === '') {
         showBasicProductDetail(productUrl, productData);
         return;
     }
-    fetchWeidianSkuImages(productID).then(function(extra){
-        showBasicProductDetail(productUrl, productData, extra);
+    const timeoutMs = (window.CONFIG && CONFIG.API && CONFIG.API.TIMEOUT) || 10000;
+    if (!window.__ffbuy_detailCache) window.__ffbuy_detailCache = {};
+    if (!window.__ffbuy_detailInflight) window.__ffbuy_detailInflight = {};
+    const cacheKey = productID;
+    const cached = window.__ffbuy_detailCache[cacheKey];
+    if (cached) {
+        renderProductDetail(cached, productUrl, productData);
+        return;
+    }
+    if (window.__ffbuy_detailInflight[cacheKey]) {
+        window.__ffbuy_detailInflight[cacheKey]
+            .then(data => { if (data) renderProductDetail(data, productUrl, productData); else showBasicProductDetail(productUrl, productData); })
+            .catch(() => { showBasicProductDetail(productUrl, productData); });
+        return;
+    }
+    const fetchOopbuyDetails = async () => {
+        try {
+            const url = `https://webapi.oopbuy.com/product/detail?channel=weidian&refresh=0&spuNo=${encodeURIComponent(productID)}`;
+            const controller = new AbortController();
+            const t = setTimeout(function(){ controller.abort(); }, timeoutMs);
+            const res = await fetch(url, { signal: controller.signal });
+            clearTimeout(t);
+            if (res && res.ok) {
+                const j = await res.json();
+                let list = (j && j.result && j.result.imageList) || [];
+                if (!Array.isArray(list)) list = [];
+                list = list.map(function(it){ return typeof it === 'string' ? it : (it.url || it.imageUrl || it.img || it.src || ''); }).filter(function(u){ return u && typeof u === 'string'; });
+                const d = { data: { images: list } };
+                return d;
+            }
+        } catch (e) {}
+        return { data: { images: [] } };
+    };
+    const p = fetchOopbuyDetails();
+    window.__ffbuy_detailInflight[cacheKey] = p;
+    p.then(function(data){
+        delete window.__ffbuy_detailInflight[cacheKey];
+        if (data) {
+            window.__ffbuy_detailCache[cacheKey] = data;
+            renderProductDetail(data, productUrl, productData);
+        } else {
+            showBasicProductDetail(productUrl, productData);
+        }
     }).catch(function(){
+        delete window.__ffbuy_detailInflight[cacheKey];
         showBasicProductDetail(productUrl, productData);
     });
 }
 
 // 显示基本商品信息（当API请求失败时）
-function showBasicProductDetail(productUrl, productData, extraImages) {
+function showBasicProductDetail(productUrl, productData) {
     const detailBody = document.getElementById('productDetailBody');
+    
+    // 格式化价格显示，添加USD标签
     let priceDisplay = productData.US || '--';
     if (priceDisplay !== '--') {
         priceDisplay = priceDisplay.replace('USD', '<span class="price-currency">USD</span>');
     }
-    let images = Array.isArray(extraImages) && extraImages.length > 0 ? extraImages.map(function(u){ return String(u).trim(); }) : [productData.ztURL];
-    let imagesHtml = '';
-    let thumbnailsHtml = '';
-    if (images && images.length > 0) {
-        var isMobile = window.innerWidth <= 768;
-        if (isMobile) {
-            imagesHtml = `<div class="product-detail-slider" id="detailSlider">
-                <div class="product-detail-slider-track" id="detailSliderTrack">
-                    ${images.map(img => `<img src="${img}" class="product-detail-slide" alt="${productData.spbt}">`).join('')}
-                </div>
-                ${images.length > 1 ? `<div class="product-detail-dots" id="detailSliderDots">${images.map((_,i)=>`<span class="dot${i===0?' active':''}"></span>`).join('')}</div>` : ''}
-            </div>`;
-        } else {
-            imagesHtml = `<img src="${images[0]}" class="product-detail-main-image" alt="${productData.spbt}" id="mainDetailImage">`;
-            if (images.length > 1) {
-                thumbnailsHtml = '<div class="product-detail-thumbnails-wrapper">';
-                if (images.length > 4) {
-                    thumbnailsHtml += '<div class="thumbnail-scroll-indicator left"><i class="fas fa-chevron-left"></i></div>';
-                }
-                thumbnailsHtml += '<div class="product-detail-thumbnails">';
-                images.forEach((img, index) => {
-                    thumbnailsHtml += `<img src="${img}" class="product-detail-thumbnail ${index === 0 ? 'active' : ''}" alt="Thumbnail ${index + 1}">`;
-                });
-                thumbnailsHtml += '</div>';
-                if (images.length > 4) {
-                    thumbnailsHtml += '<div class="thumbnail-scroll-indicator right"><i class="fas fa-chevron-right"></i></div>';
-                }
-                thumbnailsHtml += '</div>';
-            }
-        }
-    }
+    
     detailBody.innerHTML = `
         <div class="product-detail-images">
-            ${imagesHtml}
-            ${thumbnailsHtml}
+            <img src="${productData.ztURL}" class="product-detail-main-image" alt="${productData.spbt}">
         </div>
         <div class="product-detail-info">
             <h3>${productData.spbt}</h3>
@@ -294,17 +282,6 @@ function showBasicProductDetail(productUrl, productData, extraImages) {
               </div>
         </div>
     `;
-    try {
-        var main = detailBody.querySelector('#mainDetailImage');
-        var thumbs = detailBody.querySelectorAll('.product-detail-thumbnail');
-        thumbs.forEach(function(t){
-            t.addEventListener('click', function(){
-                thumbs.forEach(function(x){ x.classList.remove('active'); });
-                this.classList.add('active');
-                if (main) main.src = this.src;
-            });
-        });
-    } catch (e) {}
     const agentBtns1 = detailBody.querySelectorAll('.product-detail-buy-btn');
     agentBtns1.forEach(function(btn){
         btn.addEventListener('click', function(e){
@@ -324,7 +301,7 @@ function showBasicProductDetail(productUrl, productData, extraImages) {
 }
 
 // 渲染商品详情
-function renderProductDetail(detailData, productUrl, productData, extraImages) {
+function renderProductDetail(detailData, productUrl, productData) {
     const detailBody = document.getElementById('productDetailBody');
     
     // 如果API返回了错误或没有数据
@@ -340,20 +317,16 @@ function renderProductDetail(detailData, productUrl, productData, extraImages) {
     let thumbnailsHtml = '';
     
     let images = [];
-    let weidianImages = Array.isArray(extraImages) ? extraImages : [];
-    if (data.productInfo && Array.isArray(data.productInfo.imgList) && data.productInfo.imgList.length > 0) {
+    if (data.images && data.images.length > 0) {
+        images = data.images;
+    } else if (data.productInfo && Array.isArray(data.productInfo.imgList) && data.productInfo.imgList.length > 0) {
         images = data.productInfo.imgList;
     } else if (data.imgList && data.imgList.length > 0) {
         images = data.imgList;
     } else if (data.productDetail && Array.isArray(data.productDetail.imgList) && data.productDetail.imgList.length > 0) {
         images = data.productDetail.imgList;
-    } else if (data.images && data.images.length > 0) {
-        images = data.images;
     } else {
         images = [productData.ztURL];
-    }
-    if (weidianImages && weidianImages.length > 0) {
-        images = weidianImages;
     }
     images = images.map(function(u){ return String(u).trim().replace(/`/g, ''); });
     
